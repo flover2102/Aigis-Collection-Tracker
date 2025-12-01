@@ -3,6 +3,12 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+<!-- 🔴 CORRECTION DES IMAGES ICI -->
+<!-- Cette ligne force le navigateur à cacher l'origine du site au Wiki. -->
+<!-- Le Wiki acceptera donc d'afficher les images. -->
+<meta name="referrer" content="no-referrer" />
+
 <title>Aigis — Collection Tracker (Black)</title>
 <style>
 :root{--accent:#5bff9e;--accent-muted:#2c4837;--bg:#071021;--muted:#9aa6b2;--info-color:#38bdf8;}
@@ -177,12 +183,8 @@ let showMode='all';
 let currentSort = 'name';
 
 // --- COMPRESSION ULTRA-OPTIMISEE (Bitmap V2) ---
-// Format: v2- + Base64(Gzip(Bitmap))
 async function compressData(ownedSet) {
-  // 1. Trier les unités par ID numérique pour avoir un ordre fixe
   const refUnits = [...units].sort((a,b) => a.numericId - b.numericId);
-  
-  // 2. Créer un tableau de bits
   const numBytes = Math.ceil(refUnits.length / 8);
   const buffer = new Uint8Array(numBytes);
   
@@ -194,25 +196,21 @@ async function compressData(ownedSet) {
     }
   });
 
-  // 3. Compresser Gzip
   const stream = new Blob([buffer]).stream();
   const compressed = stream.pipeThrough(new CompressionStream("gzip"));
   const response = await new Response(compressed);
   const blob = await response.blob();
   const resultBuffer = await blob.arrayBuffer();
   
-  // 4. Base64 URL safe
   let base64 = btoa(String.fromCharCode(...new Uint8Array(resultBuffer)));
   return 'v2-' + base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
 async function decompressData(encodedString) {
-  // Décodage Base64 Url Safe
   let base64 = encodedString.startsWith('v2-') ? encodedString.substring(3) : encodedString;
   let str = base64.replace(/-/g, '+').replace(/_/g, '/');
   while (str.length % 4) str += '=';
   
-  // Décompression Gzip
   const binary = atob(str);
   const bytes = Uint8Array.from(binary, c => c.charCodeAt(0));
   const stream = new Blob([bytes]).stream();
@@ -221,7 +219,6 @@ async function decompressData(encodedString) {
   const buffer = await response.arrayBuffer();
   const bitmap = new Uint8Array(buffer);
   
-  // Reconstruction du Set
   const result = new Set();
   const refUnits = [...units].sort((a,b) => a.numericId - b.numericId);
   
@@ -232,13 +229,11 @@ async function decompressData(encodedString) {
       result.add(u.id);
     }
   });
-  
   return result;
 }
 
-// 1. Initialisation (Ordre modifié : Data d'abord, URL ensuite)
+// 1. Initialisation
 async function init() {
-  // A. Charger les Données (Cache ou API)
   const cachedData = localStorage.getItem(LOCAL_DATA_KEY);
   let hasCache = false;
   if (cachedData) {
@@ -255,7 +250,6 @@ async function init() {
   
   if (!hasCache) { await fetchDataFromWiki(); }
   
-  // B. Une fois les unités chargées, traiter l'URL
   await handleUrlMode();
   
   if (el.search) el.search.addEventListener('input', () => render());
@@ -268,22 +262,15 @@ async function handleUrlMode() {
   if (urlParams.has('share')) {
     try {
       const shareCode = urlParams.get('share');
-      // Détection v2 vs v1
       if (shareCode.startsWith('v2-')) {
         owned = await decompressData(shareCode);
         activateSharedMode();
       } else {
-        // Fallback ancienne méthode (v1)
-        // ... (Code simplifié pour cette version pure)
-        alert("Old link format not supported in this optimized version.");
+        alert("Old link format not supported.");
         loadLocal();
       }
-    } catch (e) { 
-      console.error("Link error", e); 
-      loadLocal(); 
-    }
+    } catch (e) { console.error("Link error", e); loadLocal(); }
   } else if (urlParams.has('data')) {
-    // Legacy Legacy
     try { owned = new Set(JSON.parse(atob(urlParams.get('data')))); activateSharedMode(); }
     catch(e) { loadLocal(); }
   } else {
