@@ -1,7 +1,7 @@
     
 # Aigis Collection Tracker 🛡️
 
-A lightweight, single-page web application to track your **Millennium War Aigis** unit collection.
+A lightweight, single-page web application to track your Aigis unit collection.
 
 It automatically fetches unit data from the Fandom Wiki API, requiring no manual database updates. Your progress is saved locally in your browser.
 
