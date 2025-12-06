@@ -3,117 +3,173 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-
-<!-- 🔴 CORRECTION DES IMAGES ICI -->
-<!-- Cette ligne force le navigateur à cacher l'origine du site au Wiki. -->
-<!-- Le Wiki acceptera donc d'afficher les images. -->
 <meta name="referrer" content="no-referrer" />
+<meta name="description" content="Aigis Collection Tracker">
 
 <title>Aigis — Collection Tracker (Black)</title>
 <style>
-:root{--accent:#5bff9e;--accent-muted:#2c4837;--bg:#071021;--muted:#9aa6b2;--info-color:#38bdf8;}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:Inter,system-ui;background:var(--bg);color:#e6f0f6}
-.container{max-width:1200px;margin:18px auto;padding:18px}
+/* --- THEME --- */
+:root{
+  --accent: #5bff9e;
+  --accent-muted: #2c4837;
+  --bg: #071021;
+  --card-bg: rgba(255,255,255,0.03);
+  --muted: #9aa6b2;
+  --info-color: #38bdf8;
+  --danger: #ff4444;
+  --danger-soft: #991b1b;
+}
 
-.hidden{display:none !important}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Inter, system-ui, sans-serif; background: var(--bg); color: #e6f0f6; font-size: 13px; }
+.container { max-width: 1200px; margin: 18px auto; padding: 18px; }
+.hidden { display: none !important; }
 
-/* Header layout */
-.header{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:12px;}
-.title-group { display: flex; flex-direction: column; gap: 12px; margin-right: auto; }
-.h1{font-size:20px; line-height: 1.2;}
+/* --- HEADER --- */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
 
-/* BANNER VIEW MODE */
+.title-group { display: flex; flex-direction: column; gap: 12px; }
+.h1 { font-size: 20px; font-weight: 700; margin: 0; color: #fff; }
+
+/* VIEW MODE BANNER */
 .shared-banner {
   background: rgba(13, 37, 56, 0.95);
   border: 2px solid var(--info-color);
-  box-shadow: 0 0 15px rgba(56, 189, 248, 0.25);
-  padding: 10px 16px; 
-  border-radius: 12px; 
-  display: inline-flex; align-items: center; gap: 20px;
-  align-self: flex-start;
-  transition: all 0.3s ease;
+  border-radius: 12px;
+  padding: 10px 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  min-width: 250px;
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.15), inset 0 0 10px rgba(56, 189, 248, 0.05);
 }
-.shared-text-group { display: flex; flex-direction: column; }
-.shared-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #7dd3fc; opacity: 0.8; margin-bottom: 2px; }
-.shared-title { font-size: 16px; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 0.5px; text-shadow: 0 0 10px rgba(56, 189, 248, 0.5); }
-
+.shared-text-group { display: flex; flex-direction: column; gap: 2px; }
+.shared-label { font-size: 10px; font-weight: 600; text-transform: uppercase; color: #60a5fa; letter-spacing: 1px; }
+.shared-title { font-size: 20px; font-weight: 900; color: #ffffff; text-transform: uppercase; text-shadow: 0 0 8px rgba(56, 189, 248, 0.6); }
 .btn-exit {
-  background: rgba(56, 189, 248, 0.1); border: 1px solid var(--info-color); color: var(--info-color);
-  padding: 6px 14px; font-size: 12px; font-weight: bold; border-radius: 6px; cursor: pointer; transition: all 0.2s; text-transform: uppercase;
+  background: transparent; border: 1px solid var(--info-color); color: var(--info-color);
+  padding: 6px 16px; font-size: 12px; font-weight: bold; border-radius: 6px; cursor: pointer; text-transform: uppercase; transition: all 0.2s;
 }
-.btn-exit:hover { background: var(--info-color); color: #071021; box-shadow: 0 0 10px var(--info-color); }
+.btn-exit:hover { background: rgba(56, 189, 248, 0.2); box-shadow: 0 0 8px rgba(56, 189, 248, 0.4); }
 
+/* STATS */
 .collection-stats {
-  background: rgba(255,255,255,0.05); padding: 8px 12px;
-  border-radius: 8px; font-size: 14px; border: 1px solid rgba(255,255,255,0.1);
-  align-self: center; 
+  background: rgba(255,255,255,0.05); padding: 8px 16px;
+  border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);
+  font-family: monospace; 
+  position: absolute; left: 50%; transform: translateX(-50%); top: 24px;
 }
 .collection-stats b { color: var(--accent); }
+@media (max-width: 850px) { .collection-stats { position: static; transform: none; margin: 10px 0; } }
 
-.toolbar-line{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.btn{padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.10);background:var(--accent-muted);color:#e6f0f6;cursor:pointer;transition:all .12s; font-size: 13px;}
-.btn:hover{background:rgba(255,255,255,0.15);}
-.btn.active{background:var(--accent);color:#071827}
+/* TOOLS */
+.toolbar-actions { display: flex; gap: 6px; align-items: center; margin-left: auto; }
 
-/* Feedback Copied */
-.btn.copied { background: #fff; color: #071021; font-weight: bold; transform: scale(1.05); border-color: #fff; }
+/* BUTTONS */
+.btn {
+  padding: 8px 12px; border-radius: 6px; 
+  border: 1px solid rgba(255,255,255,.10);
+  background-color: var(--accent-muted); 
+  color: #e6f0f6; 
+  cursor: pointer; transition: all 0.15s; 
+  font-size: 12px; font-weight: 500; user-select: none;
+}
+.btn:hover { background-color: rgba(255,255,255,0.15); }
+.btn.active { background-color: var(--accent); color: #071827; border-color: var(--accent); font-weight: 700; }
 
-.input{
-  padding:8px; border-radius:8px; border:1px solid rgba(255,255,255,0.25);
-  background:transparent; color:inherit;
+#btn-share-link { background-color: var(--accent-muted); color: #e6f0f6; font-weight: 600; }
+#btn-share-link.copied { 
+  background-color: var(--accent) !important; 
+  color: #071021 !important;
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 15px var(--accent);
 }
 
-/* Grid & Cards */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:28px}
-.card{padding:8px;border-radius:8px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,.03);text-align:center;cursor:pointer;position:relative;min-height:170px;transition: all 0.1s ease-out;}
-.card:hover { background: rgba(255,255,255,0.06); }
-.card img{width:96px;height:96px;object-fit:contain;margin-top: 12px;} 
-.card .title{font-size:13px;margin-top:8px;display:flex;align-items:center;gap:6px;justify-content:center}
-.card .meta{font-size:12px;color:var(--muted)}
-.card.owned{outline:3px solid var(--accent);background:var(--accent-muted);}
-.read-only .card { cursor: default; }
+.toolbar-line { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; justify-content: center; margin-top: 10px; }
+.input { padding: 8px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.2); color: inherit; min-width: 250px; }
 
-.check-indicator {
-  position: absolute; top: 8px; right: 8px; width: 20px; height: 20px;
-  border: 2px solid rgba(255,255,255,0.3); border-radius: 4px; transition: all 0.2s; background: rgba(0,0,0,0.3);
+.sort-select {
+  padding: 8px 12px; padding-right: 30px; border-radius: 6px; 
+  background-color: var(--accent-muted); color: #e6f0f6; 
+  border: 1px solid rgba(255,255,255,0.10); 
+  cursor: pointer; font-size: 12px; font-weight: 500; outline: none;
+  appearance: none; -webkit-appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23e6f0f6%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat; background-position: right 10px center; background-size: 10px;
 }
-.card.owned .check-indicator { background: var(--accent); border-color: var(--accent); }
-.card.owned .check-indicator::after {
-  content: '✔'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  font-size: 14px; color: #071827; font-weight: bold;
+.sort-select option { background-color: #071021; color: #e6f0f6; padding: 8px; }
+
+/* FILTERS */
+.filter-controls { 
+  border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); 
+  padding: 10px 0; margin-top: 12px; display: flex; flex-direction: column; gap: 8px; 
 }
+.filter-group { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.filter-group-label { font-size: 11px; color: var(--muted); margin-right: 6px; min-width: auto; text-align: right; }
 
-.tags{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:8px}
-.tag{font-size:11px;padding:4px 6px;border-radius:6px;background:rgba(255,255,255,0.02);color:var(--muted);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.small{font-size:13px;color:var(--muted)}
-.loading{margin-top:8px;font-size:13px;opacity:.8}
-
-/* UI des filtres */
-.filter-controls {
-  border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05);
-  padding: 12px 0; margin-top: 16px; display: flex; flex-direction: column; gap: 12px; 
+.filter-btn-wrapper { display: inline-flex; border-radius: 4px; overflow: hidden; border: 1px solid rgba(255,255,255,.15); background: var(--accent-muted); height: 26px; }
+.btn-main {
+  padding: 0 8px; border: none; background: transparent; color: #e6f0f6; cursor: pointer; font-size: 11px; 
+  border-right: 1px solid rgba(0,0,0,0.2); flex-grow: 0; display: flex; align-items: center;
 }
-.filter-group { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-.filter-group-label { font-size: 13px; color: var(--muted); margin-right: 8px; min-width: 80px; text-align: right; }
+.btn-main:hover { background: rgba(255,255,255,0.1); }
+.btn-main.active { background: var(--accent); color: #071827; font-weight: 700; }
+.btn-minus { padding: 0 6px; border: none; background: rgba(0,0,0,0.2); color: #e6f0f6; cursor: pointer; font-size: 12px; font-weight: bold; display: flex; align-items: center; }
+.btn-minus:hover { background: rgba(255,0,0,0.3); }
+.btn-minus.exclude { background: var(--danger-soft); color: #fff; }
 
-/* Dropdowns */
 .dropdown-wrapper { position: relative; display: inline-block; }
 .dropdown-panel {
-  position:absolute; top:100%; left:0;
-  background:#0d1a2f; border:1px solid rgba(255,255,255,.1);
-  padding: 8px; border-radius: 8px; display: none; flex-direction: column; gap: 6px;
-  z-index: 20; min-width: 180px; margin-top: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  position: absolute; top: 100%; left: auto; right: 0; 
+  background: #0d1a2f; border: 1px solid rgba(255,255,255,.1);
+  padding: 8px; border-radius: 6px; display: none; flex-direction: column; gap: 4px;
+  z-index: 50; min-width: 180px; margin-top: 4px; box-shadow: 0 8px 24px rgba(0,0,0,0.5);
 }
 .dropdown-panel:not(.hidden) { display: flex; }
-.dropdown-panel .btn { background: #071021; text-align: left; }
-.dropdown-panel .btn.active { background: var(--accent); color: #071827; font-weight: bold; }
+.dropdown-panel .filter-btn-wrapper { width: 100%; } 
+.dropdown-panel .btn-main { flex-grow: 1; }
 
-.sort-control { margin-left: 12px; }
-.sort-select {
-  padding: 8px; border-radius: 8px; background: var(--accent-muted); color: #e6f0f6; border: 1px solid rgba(255,255,255,.10); cursor: pointer; outline: none;
+/* GRID */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; margin-top: 16px; }
+.card {
+  padding: 6px; border-radius: 8px; background: var(--card-bg); border: 1px solid rgba(255,255,255,.03);
+  text-align: center; cursor: pointer; position: relative; min-height: 120px;
+  transition: transform 0.1s ease-out, background 0.1s; display: flex; flex-direction: column; align-items: center;
+  content-visibility: auto; contain-intrinsic-size: 110px 140px;
 }
+.card:hover { background: rgba(255,255,255,0.08); transform: translateY(-2px); }
+.card.owned { outline: 2px solid var(--accent); background: rgba(44, 72, 55, 0.4); }
+.read-only .card { cursor: default; } 
 
+.card img {
+  width: 90px; height: 90px; border-radius: 8px; margin-top: 2px; 
+  background: rgba(0,0,0,0.2); display: block;
+  object-fit: contain; object-position: center;
+  transition: opacity 0.3s;
+}
+body.img-full .card img { width: 100%; height: 120px; background: transparent; }
+
+.card .no-img { width: 90px; height: 90px; margin-top: 2px; border-radius: 8px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-size: 20px; color: rgba(255,255,255,0.2); }
+.card .title { font-size: 10px; margin-top: 4px; line-height: 1.2; font-weight: 500; overflow-wrap: break-word; width: 100%; }
+
+.check-indicator {
+  position: absolute; top: 4px; right: 4px; width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; background: rgba(0,0,0,0.4); z-index: 2; pointer-events: none;
+}
+.card.owned .check-indicator { background: var(--accent); border-color: var(--accent); }
+.card.owned .check-indicator::after { content: '✔'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px; color: #071827; font-weight: 900; }
+
+.tags { display: flex; flex-wrap: wrap; gap: 2px; justify-content: center; margin-top: 4px; }
+.tag { font-size: 9px; padding: 1px 3px; border-radius: 3px; background: rgba(255,255,255,0.06); color: var(--muted); white-space: nowrap; }
+.loading { margin-top: 20px; font-size: 13px; color: var(--accent); font-weight: bold; text-align: center; }
 </style>
 </head>
 <body>
@@ -122,59 +178,52 @@ body{font-family:Inter,system-ui;background:var(--bg);color:#e6f0f6}
   <div class="header">
     <div class="title-group">
       <h1 class="h1">Aigis — Collection Tracker (Black)</h1>
-      
-      <!-- BANNER VIEW MODE -->
       <div id="shared-banner" class="shared-banner hidden">
         <div class="shared-text-group">
           <span class="shared-label">Shared Collection</span>
           <span class="shared-title">VIEW MODE</span>
         </div>
-        <button id="btn-exit-share" class="btn-exit">Exit</button>
+        <button id="btn-exit-share" class="btn-exit">EXIT</button>
       </div>
     </div>
     
-    <div id="collection-stats" class="collection-stats">
-      Collection: 0% (0/0)
-    </div>
+    <div id="collection-stats" class="collection-stats">Collection: 0% (0/0)</div>
 
-    <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+    <div class="toolbar-actions">
       <button id="btn-share-link" class="btn">Share Link</button>
       <button id="btn-export" class="btn">Export</button>
       <button id="btn-import" class="btn">Import</button>
-      
       <div class="dropdown-wrapper">
         <button id="btn-options" class="btn">Options ▾</button>
-        <div id="options-panel" class="dropdown-panel hidden" style="right:0;left:auto;min-width:180px;">
+        <div id="options-panel" class="dropdown-panel hidden" style="right:0;left:auto;min-width:160px;">
+          <button id="btn-toggle-imgmode" class="btn">Img: Icon</button>
+          <button id="btn-toggle-name" class="btn active">Show Name</button>
           <button id="btn-toggle-tags" class="btn">Show Tags</button>
           <button id="btn-toggle-fodder" class="btn">Show Fodder</button>
         </div>
       </div>
-      
       <input id="file-input" type="file" accept="application/json" class="hidden" />
     </div>
   </div>
 
-  <div class="toolbar-line" style="justify-content:center;margin-top:14px;align-items:center;">
-    <input id="search" class="input" placeholder="Search..." style="min-width:420px;max-width:70%" />
-    
+  <div class="toolbar-line">
+    <input id="search" class="input" placeholder="Search name..." />
     <select id="sort-select" class="sort-select">
       <option value="name">Sort: Name (A-Z)</option>
       <option value="release">Sort: Release (Newest)</option>
     </select>
-
-    <div id="search-stats" class="small" style="margin-left:12px">0 shown</div>
+    <div id="search-stats" style="font-size:12px; color:var(--muted)">0 shown</div>
   </div>
 
   <div id="filter-controls" class="filter-controls"></div>
-  
-  <div id="loading" class="loading">Loading data...</div>
+  <div id="loading" class="loading hidden">Loading...</div>
   <div id="grid" class="grid" aria-live="polite"></div>
 </div>
 
 <script>
 const API='https://aigis.fandom.com/api.php';
 const LOCAL_OWNED_KEY='aigis-owned-v6';
-const LOCAL_DATA_KEY='aigis-units-cache-v7'; 
+const LOCAL_DATA_KEY='aigis-units-cache-v79'; 
 
 let units=[];
 let owned=new Set();
@@ -182,141 +231,17 @@ let isSharedMode = false;
 let showMode='all'; 
 let currentSort = 'name';
 
-// --- COMPRESSION ULTRA-OPTIMISEE (Bitmap V2) ---
-async function compressData(ownedSet) {
-  const refUnits = [...units].sort((a,b) => a.numericId - b.numericId);
-  const numBytes = Math.ceil(refUnits.length / 8);
-  const buffer = new Uint8Array(numBytes);
-  
-  refUnits.forEach((u, index) => {
-    if (ownedSet.has(u.id)) {
-      const byteIndex = Math.floor(index / 8);
-      const bitIndex = index % 8;
-      buffer[byteIndex] |= (1 << bitIndex);
-    }
-  });
-
-  const stream = new Blob([buffer]).stream();
-  const compressed = stream.pipeThrough(new CompressionStream("gzip"));
-  const response = await new Response(compressed);
-  const blob = await response.blob();
-  const resultBuffer = await blob.arrayBuffer();
-  
-  let base64 = btoa(String.fromCharCode(...new Uint8Array(resultBuffer)));
-  return 'v2-' + base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-}
-
-async function decompressData(encodedString) {
-  let base64 = encodedString.startsWith('v2-') ? encodedString.substring(3) : encodedString;
-  let str = base64.replace(/-/g, '+').replace(/_/g, '/');
-  while (str.length % 4) str += '=';
-  
-  const binary = atob(str);
-  const bytes = Uint8Array.from(binary, c => c.charCodeAt(0));
-  const stream = new Blob([bytes]).stream();
-  const decompressed = stream.pipeThrough(new DecompressionStream("gzip"));
-  const response = await new Response(decompressed);
-  const buffer = await response.arrayBuffer();
-  const bitmap = new Uint8Array(buffer);
-  
-  const result = new Set();
-  const refUnits = [...units].sort((a,b) => a.numericId - b.numericId);
-  
-  refUnits.forEach((u, index) => {
-    const byteIndex = Math.floor(index / 8);
-    const bitIndex = index % 8;
-    if (byteIndex < bitmap.length && (bitmap[byteIndex] & (1 << bitIndex))) {
-      result.add(u.id);
-    }
-  });
-  return result;
-}
-
-// 1. Initialisation
-async function init() {
-  const cachedData = localStorage.getItem(LOCAL_DATA_KEY);
-  let hasCache = false;
-  if (cachedData) {
-    try {
-      const cache = JSON.parse(cachedData);
-      if (Date.now() - cache.timestamp < 86400000 && Array.isArray(cache.units) && cache.units.length > 0) {
-        units = cache.units;
-        hasCache = true;
-        render();
-        el.loading.classList.add('hidden');
-      }
-    } catch(e) { console.warn("Invalid Cache"); }
-  }
-  
-  if (!hasCache) { await fetchDataFromWiki(); }
-  
-  await handleUrlMode();
-  
-  if (el.search) el.search.addEventListener('input', () => render());
-  renderStaticFilters();
-}
-
-async function handleUrlMode() {
-  const urlParams = new URLSearchParams(window.location.search);
-  
-  if (urlParams.has('share')) {
-    try {
-      const shareCode = urlParams.get('share');
-      if (shareCode.startsWith('v2-')) {
-        owned = await decompressData(shareCode);
-        activateSharedMode();
-      } else {
-        alert("Old link format not supported.");
-        loadLocal();
-      }
-    } catch (e) { console.error("Link error", e); loadLocal(); }
-  } else if (urlParams.has('data')) {
-    try { owned = new Set(JSON.parse(atob(urlParams.get('data')))); activateSharedMode(); }
-    catch(e) { loadLocal(); }
-  } else {
-    loadLocal();
-  }
-  render();
-  updateStats();
-}
-
-function loadLocal() {
-  owned = new Set(JSON.parse(localStorage.getItem(LOCAL_OWNED_KEY)||'[]'));
-}
-
-function activateSharedMode() {
-  isSharedMode = true;
-  showMode = 'owned';
-  document.getElementById('shared-banner').classList.remove('hidden');
-  document.body.classList.add('read-only');
-  // Auto-active le bouton "Owned"
-  document.querySelectorAll('.filter-controls button').forEach(b => {
-    if(b.textContent === 'Owned') b.classList.add('active');
-    if(b.textContent === 'Unowned') b.classList.remove('active');
-  });
-}
-
-document.getElementById('btn-exit-share').addEventListener('click', () => {
-  window.location.href = window.location.pathname; 
-});
-
-// --- Filtres ---
-let activeRanges=new Set();
-let activeRoles=new Set();
-let activeGenders=new Set();
-let activeKingdoms=new Set();
-let activeRaces=new Set();
-let activeArchetypes=new Set();
-let activeSeasonal=new Set();
-let activeCrossover=new Set();
-
-// --- UI ---
+// --- OPTIONS UI ---
 let showTags = false; 
 let showFodder = false;
+let showName = true;
+let isImgFull = false; 
 let openDropdownPanel = null;
 
-const LIST_RACES=["Angels Race","Beastfolk","Birdfolk","Celestials","Dark Elves","Demons","Dragonfolk","Dwarves","Elves","Giants","Goblins","Gods","Half-Demons","Half-Elves","Half-Gods","Hermits Race","Humans","Machines","Merfolk","Nendoroids","Orcs","Spirits","Undead","Vampires","Youkai"];
-const UI_RACES = [...LIST_RACES, "Other"];
+const LABEL_MAP = { "Angels Race": "Angels", "Hermits Race": "Hermits", "Deep Sea Units": "Deep Sea", "Makai Units": "Makai", "Male Units": "Male", "Female Units": "Female", "Koihime Units": "Koihime", "Elves": "Elf", "Desert Country": "Desert", "Flower Country": "Flower", "Eastern Country": "Eastern", "New Year's Units": "New Year", "Valentine's Day Units": "Valentine", "Hot Springs Units": "Hot Springs", "Easter Hunts": "Easter", "School Units": "School", "June Bride Units": "Bride", "Summer Units": "Summer", "Halloween Units": "Halloween", "Christmas Units": "Christmas", "Kingdom of Pars": "Pars", "Seven Deadly Sins": "7 Deadly Sins", "Hero Units": "Hero", "Player Units": "Player" };
+function cleanLabel(raw) { return LABEL_MAP[raw] || raw.replace(/ Units$/i, '').replace(/ Country$/i, ''); }
+
+const filterStates = { ranges: new Map(), roles: new Map(), genders: new Map(), kingdoms: new Map(), races: new Map(), archetypes: new Map(), seasonal: new Map(), crossover: new Map() };
 const FIXED_KINGDOMS=["Deep Sea Units","Desert Country","Eastern Country","Flower Country","Kingdom","Makai Units","White Empire"];
 const FIXED_ARCHETYPES=["Artillery","Bowmen","Cavalry","Clergy","Dragons","Flying","Gunners","Heavy","Magicians","Nobles"];
 const FIXED_SEASONAL=["New Year's Units","Valentine's Day Units","Hot Springs Units","Easter Hunts","School Units","June Bride Units","Summer Units","Halloween Units","Christmas Units"];
@@ -324,475 +249,217 @@ const FIXED_CROSSOVER=["Koihime Units","Kingdom of Pars","Seven Deadly Sins"];
 const FIXED_RANGES = ["Melee", "Ranged", "Omni"];
 const FIXED_ROLES = ["Hero Units", "Player Units"];
 const FIXED_GENDERS = ["Male Units", "Female Units"];
+const LIST_RACES=["Angels Race","Beastfolk","Birdfolk","Celestials","Dark Elves","Demons","Dragonfolk","Dwarves","Elves","Giants","Goblins","Gods","Half-Demons","Half-Elves","Half-Gods","Hermits Race","Humans","Machines","Merfolk","Nendoroids","Orcs","Spirits","Undead","Vampires","Youkai"];
+const UI_RACES = [...LIST_RACES, "Other"];
 
-const el={
-  search:document.getElementById('search'),
-  grid:document.getElementById('grid'),
-  stats:document.getElementById('search-stats'),
-  colStats:document.getElementById('collection-stats'),
-  loading:document.getElementById('loading'),
-  filterControls: document.getElementById('filter-controls'),
-  sortSelect: document.getElementById('sort-select')
-};
+const el={ search:document.getElementById('search'), grid:document.getElementById('grid'), stats:document.getElementById('search-stats'), colStats:document.getElementById('collection-stats'), loading:document.getElementById('loading'), filterControls: document.getElementById('filter-controls'), sortSelect: document.getElementById('sort-select') };
 
-// --- Helpers ---
-function saveOwned(){
-  if (isSharedMode) return;
-  localStorage.setItem(LOCAL_OWNED_KEY,JSON.stringify([...owned]));
-}
+async function compressData(ownedSet) { const refUnits = [...units].sort((a,b) => a.numericId - b.numericId); const numBytes = Math.ceil(refUnits.length / 8); const buffer = new Uint8Array(numBytes); refUnits.forEach((u, index) => { if (ownedSet.has(u.id)) buffer[Math.floor(index/8)] |= (1 << (index%8)); }); const stream = new Blob([buffer]).stream().pipeThrough(new CompressionStream("gzip")); const response = await new Response(compressed = stream); let base64 = btoa(String.fromCharCode(...new Uint8Array(await response.arrayBuffer()))); return 'v2-' + base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+async function decompressData(encodedString) { let base64 = encodedString.startsWith('v2-') ? encodedString.substring(3) : encodedString; let str = base64.replace(/-/g, '+').replace(/_/g, '/'); while (str.length % 4) str += '='; const stream = new Blob([Uint8Array.from(atob(str), c => c.charCodeAt(0))]).stream().pipeThrough(new DecompressionStream("gzip")); const response = await new Response(stream); const bitmap = new Uint8Array(await response.arrayBuffer()); const result = new Set(); const refUnits = [...units].sort((a,b) => a.numericId - b.numericId); refUnits.forEach((u, index) => { if (Math.floor(index/8) < bitmap.length && (bitmap[Math.floor(index/8)] & (1 << (index%8)))) result.add(u.id); }); return result; }
 
-function saveUnitsToCache(data) {
-  try { localStorage.setItem(LOCAL_DATA_KEY, JSON.stringify({ timestamp: Date.now(), units: data })); } 
-  catch(e) {}
-}
-
+function saveUnitsToCache(data) { try { localStorage.setItem(LOCAL_DATA_KEY, JSON.stringify({ timestamp: Date.now(), units: data })); } catch(e) {} }
+function saveOwned(){ if (!isSharedMode) localStorage.setItem(LOCAL_OWNED_KEY,JSON.stringify([...owned])); }
 function updateStats(){
   if(!units.length) return;
-  const collectionnableUnits = units.filter(u => (!showFodder && u.isFodder) ? false : true);
-  const totalCol = collectionnableUnits.length;
-  const ownedCol = collectionnableUnits.filter(u => owned.has(u.id)).length;
+  const totalCol = units.filter(u => (!showFodder && u.isFodder) ? false : true).length;
+  const ownedCol = units.filter(u => ((!showFodder && u.isFodder) ? false : true) && owned.has(u.id)).length;
   const percent = totalCol > 0 ? ((ownedCol / totalCol) * 100).toFixed(1) : 0;
-  
-  el.colStats.innerHTML = `Collection: <b>${percent}%</b> <span style="opacity:0.7">(${ownedCol}/${totalCol})</span>`;
-  const shown = units.filter(u=>matchesFilters(u)).length;
-  el.stats.textContent = `${shown} shown`;
+  el.colStats.innerHTML = `Collection${isSharedMode?" (View)":""}: <b>${percent}%</b> <span style="opacity:0.7">(${ownedCol}/${totalCol})</span>`;
+  el.stats.textContent = `${units.filter(u=>matchesFilters(u)).length} shown`;
 }
-
 function normalize(s){return String(s||'').replace(/^Category:/i,'').replace(/_/g,' ').trim();}
 function nk(s){return String(s||'').toLowerCase().trim();}
 function buildApiTags(catList){return (catList||[]).map(c=>normalize(c.title||c));}
+function determineRange(tags){ const t = (tags||[]).map(x => nk(x)); if(t.some(x => x.includes('omni'))) return 'Omni'; if(t.some(x => x.includes('rearguard'))) return 'Ranged'; return 'Melee'; }
 
-function determineRange(tags){
-  const t = (tags||[]).map(x => nk(x));
-  if(t.some(x => x.includes('omni'))) return 'Omni';
-  if(t.some(x => x.includes('rearguard'))) return 'Ranged';
-  if(t.some(x => x.includes('vanguard'))) return 'Melee';
-  return 'Melee';
-}
-
-function processUnitData(rawData) {
-    const apiTags = rawData.apiTags || buildApiTags(rawData.categories||[]);
+function processUnitData(u) {
+    const apiTags = buildApiTags(u.apiTags||u.categories||[]);
     let races = apiTags.filter(t => LIST_RACES.includes(t));
     if (races.length === 0) races = ["Other"];
-    const pid = parseInt(rawData.pageid || rawData.id, 10) || 0;
-    
-    return {
-      id: String(pid),
-      numericId: pid,
-      title: normalize(rawData.title || rawData.pageTitle || rawData.name),
-      img: rawData.img || rawData.image || '',
-      apiTags: apiTags,
-      tags: rawData.tags || [],
-      range: rawData.range || determineRange(apiTags),
-      genders: apiTags.filter(t => FIXED_GENDERS.includes(t)),
-      roles: apiTags.filter(t => FIXED_ROLES.includes(t)),
-      kingdoms: apiTags.filter(t => FIXED_KINGDOMS.includes(t)),
-      races: races,
-      archetypes: apiTags.filter(t => FIXED_ARCHETYPES.includes(t)),
-      seasonal: apiTags.filter(t => FIXED_SEASONAL.includes(t)),
-      crossover: apiTags.filter(t => FIXED_CROSSOVER.includes(t)),
-      isFodder: apiTags.some(t => nk(t) === 'fodder units')
-    };
+    const pid = parseInt(u.pageid || u.id, 10) || 0;
+    return { id: String(pid), numericId: pid, title: normalize(u.title || u.pageTitle || u.name), imgIcon: u.imgIcon, imgFull: u.imgFull, apiTags: apiTags, tags: u.tags || [], range: determineRange(apiTags), genders: apiTags.filter(t => FIXED_GENDERS.includes(t)), roles: apiTags.filter(t => FIXED_ROLES.includes(t)), kingdoms: apiTags.filter(t => FIXED_KINGDOMS.includes(t)), races: races, archetypes: apiTags.filter(t => FIXED_ARCHETYPES.includes(t)), seasonal: apiTags.filter(t => FIXED_SEASONAL.includes(t)), crossover: apiTags.filter(t => FIXED_CROSSOVER.includes(t)), isFodder: apiTags.some(t => nk(t) === 'fodder units') };
 }
+function checkFilterState(unitTags, filterMap) { if (filterMap.size === 0) return true; let includeRequired = false; let hasIncluded = false; for (const [tag, state] of filterMap) { const match = unitTags.some(t => nk(t) === nk(tag)) || (tag === "Other" && unitTags.includes("Other")); if (state === -1 && match) return false; if (state === 1) { includeRequired = true; if (match) hasIncluded = true; } } if (includeRequired && !hasIncluded) return false; return true; }
+function matchesFilters(u){ if (!showFodder && u.isFodder) return false; const q=nk(el.search.value||''); if(q && !nk(u.title).includes(q)) return false; if(showMode==='owned' && !owned.has(u.id)) return false; if(showMode==='notowned' && owned.has(u.id)) return false; if (filterStates.ranges.size > 0) { const state = filterStates.ranges.get(u.range); if (state === -1) return false; const hasGreen = [...filterStates.ranges.values()].some(v => v === 1); if (hasGreen && state !== 1) return false; } if (!checkFilterState(u.roles, filterStates.roles)) return false; if (!checkFilterState(u.genders, filterStates.genders)) return false; if (!checkFilterState(u.kingdoms, filterStates.kingdoms)) return false; if (!checkFilterState(u.races, filterStates.races)) return false; if (!checkFilterState(u.archetypes, filterStates.archetypes)) return false; if (!checkFilterState(u.seasonal, filterStates.seasonal)) return false; if (!checkFilterState(u.crossover, filterStates.crossover)) return false; return true; }
 
-// --- Filtrage ---
-function matchesFilters(u){
-  if (!showFodder && u.isFodder) return false;
-  const q=nk(el.search.value||'');
-  if(q && !nk(u.title).includes(q)) return false;
-  if(showMode==='owned' && !owned.has(u.id)) return false;
-  if(showMode==='notowned' && owned.has(u.id)) return false;
-  
-  if(activeRanges.size && !activeRanges.has(u.range)) return false; 
-  if(activeRoles.size && !u.roles.some(r => activeRoles.has(r))) return false;
-  if(activeGenders.size && !u.genders.some(g => activeGenders.has(g))) return false;
-  if(activeKingdoms.size && !u.kingdoms.some(k => activeKingdoms.has(k))) return false;
-  if(activeRaces.size) {
-    const hasDefinedRace = u.races.some(r => activeRaces.has(r));
-    const isOtherAndActive = activeRaces.has("Other") && u.races.includes("Other");
-    if (!hasDefinedRace && !isOtherAndActive) return false;
-  }
-  if(activeArchetypes.size && !tagSetMatches(u, activeArchetypes)) return false;
-  if(activeSeasonal.size && !tagSetMatches(u, activeSeasonal)) return false;
-  if(activeCrossover.size && !tagSetMatches(u, activeCrossover)) return false;
-  return true
-}
-
-function tagSetMatches(u, selectedSet) {
-  if (selectedSet.size === 0) return true;
-  const apiNk = (u.apiTags || []).map(nk);
-  for (const s of selectedSet) { if (apiNk.includes(nk(s))) return true; }
-  return false;
-}
-
-// --- Rendu ---
 function render(){
   el.grid.innerHTML='';
-  if(!units || units.length === 0) {
-     el.grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;">No units found (or loading). Try refreshing.</div>';
-     return;
-  }
-  const frag=document.createDocumentFragment();
-  
-  const sortedUnits = [...units].sort((a,b) => {
-    if (currentSort === 'release') return b.numericId - a.numericId;
-    else return a.title.localeCompare(b.title);
-  });
-  
+  if(!units || units.length === 0) return;
+  const sortedUnits = [...units].sort((a,b) => (currentSort === 'release') ? b.numericId - a.numericId : a.title.localeCompare(b.title));
+  const frag = document.createDocumentFragment();
   for(const u of sortedUnits){
     if(!u.id || !matchesFilters(u)) continue;
-    
-    const card=document.createElement('div');
-    card.className='card';
+    const card=document.createElement('div'); card.className='card';
     if(owned.has(u.id)) card.classList.add('owned');
-    
-    const checkbox = document.createElement('div');
-    checkbox.className = 'check-indicator';
-    card.appendChild(checkbox);
-
-    const img=document.createElement('img');
-    img.src=u.img||'';
-    img.alt=u.title;
-    img.loading = "lazy"; 
-    
-    const title=document.createElement('div');
-    title.className='title';
-    const nameSpan=document.createElement('span');
-    nameSpan.textContent=u.title;
-    
-    const wikiA=document.createElement('a');
-    wikiA.href=`https://aigis.fandom.com/wiki/${encodeURIComponent(u.title.replace(/ /g,'_'))}`;
-    wikiA.target='_blank';
-    wikiA.className='icon-link';
-    wikiA.textContent='🔗';
-    wikiA.addEventListener('click', (e) => e.stopPropagation());
-
-    title.appendChild(nameSpan);
-    title.appendChild(wikiA);
-    
-    const meta=document.createElement('div');
-    meta.className='meta';
-    meta.textContent=u.range||'';
-    
-    card.appendChild(img);
-    card.appendChild(title);
-    card.appendChild(meta);
-    
-    if(showTags){
-      const tagsWrap=document.createElement('div');
-      tagsWrap.className='tags';
-      const uniq=new Set((u.apiTags||[]).map(t=>t));
-      Array.from(uniq).slice(0,20).forEach(t=>{
-        const tk=document.createElement('span');
-        tk.className='tag';
-        tk.textContent=t;
-        tagsWrap.appendChild(tk);
-      });
-      card.appendChild(tagsWrap);
-    }
-    
-    card.addEventListener('click',()=>{
-      if(isSharedMode) return; 
-      if(owned.has(u.id)) owned.delete(u.id);
-      else owned.add(u.id);
-      saveOwned();
-      card.classList.toggle('owned', owned.has(u.id));
-      updateStats(); 
-    });
+    const checkbox = document.createElement('div'); checkbox.className = 'check-indicator'; card.appendChild(checkbox);
+    let src = isImgFull ? (u.imgFull || u.imgIcon) : (u.imgIcon || u.imgFull);
+    if(src) { const img=document.createElement('img'); img.src=src; img.alt=u.title; img.loading = "lazy"; card.appendChild(img); } 
+    else { const ph=document.createElement('div'); ph.className='no-img'; ph.textContent='?'; card.appendChild(ph); }
+    if (showName) { const title=document.createElement('div'); title.className='title'; title.textContent=u.title; card.appendChild(title); }
+    const wikiLink = document.createElement('a'); wikiLink.href=`https://aigis.fandom.com/wiki/${encodeURIComponent(u.title.replace(/ /g,'_'))}`; wikiLink.target='_blank'; wikiLink.className='icon-link'; wikiLink.textContent='Wiki 🔗'; wikiLink.style.fontSize='10px'; wikiLink.style.marginTop='auto'; wikiLink.addEventListener('click', e => e.stopPropagation()); card.appendChild(wikiLink);
+    if(showTags){ const tagsWrap=document.createElement('div'); tagsWrap.className='tags'; const ignoredTags = ["Black Units", "Male Units", "Female Units", ...FIXED_KINGDOMS]; const displayTags = (u.apiTags||[]).filter(t => !ignoredTags.includes(t) && !t.includes("Rarity")); Array.from(new Set(displayTags)).slice(0,5).forEach(t=>{ const tk=document.createElement('span'); tk.className='tag'; tk.textContent=cleanLabel(t); tagsWrap.appendChild(tk); }); card.appendChild(tagsWrap); }
+    card.addEventListener('click',()=>{ if(isSharedMode) return; if(owned.has(u.id)) owned.delete(u.id); else owned.add(u.id); saveOwned(); card.classList.toggle('owned', owned.has(u.id)); updateStats(); });
     frag.appendChild(card);
   }
-  el.grid.appendChild(frag);
-  updateStats();
+  el.grid.appendChild(frag); updateStats();
 }
 
-el.sortSelect.addEventListener('change', (e) => {
-  currentSort = e.target.value;
-  render();
-});
+document.addEventListener('DOMContentLoaded', () => {
+  el.sortSelect.addEventListener('change', (e) => { currentSort = e.target.value; render(); });
+  el.search.oninput = render;
+  document.getElementById('btn-share-link').addEventListener('click', async (e) => {
+    if(owned.size===0) return alert('Empty');
+    const btn=e.target; const txt=btn.textContent;
+    try {
+      const encoded = await compressData(owned);
+      const url = `${window.location.href.split('?')[0]}?share=${encoded}`;
+      await navigator.clipboard.writeText(url);
+      btn.textContent = "Copied!"; btn.classList.add('copied'); 
+      setTimeout(()=> {btn.textContent=txt; btn.classList.remove('copied')}, 2000);
+    } catch(x){alert('Error');}
+  });
+  document.getElementById('btn-export').onclick = () => { const b=new Blob([JSON.stringify({owned:[...owned],units})],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='aigis.json'; a.click(); };
+  document.getElementById('btn-import').onclick = () => document.getElementById('file-input').click();
+  document.getElementById('file-input').onchange = async (e) => { try{ const d=JSON.parse(await e.target.files[0].text()); if(d.owned) owned=new Set(d.owned); if(d.units) {units=d.units; saveUnitsToCache(units);} if(!isSharedMode) saveOwned(); render(); }catch(x){} };
+  document.getElementById('btn-exit-share').onclick = () => { window.location.href = window.location.pathname; };
 
-// --- Share Link Click ---
-document.getElementById('btn-share-link').addEventListener('click', async (e) => {
-  if (owned.size === 0) return alert("Nothing to share!");
+  const optionsBtn = document.getElementById('btn-options'); const optionsPanel = document.getElementById('options-panel');
+  const toggleTagsBtn = document.getElementById('btn-toggle-tags'); const toggleFodderBtn = document.getElementById('btn-toggle-fodder');
+  const toggleNameBtn = document.getElementById('btn-toggle-name'); const toggleImgBtn = document.getElementById('btn-toggle-imgmode');
   
-  const btn = e.target;
-  const originalText = btn.textContent;
-  
-  try {
-    const encoded = await compressData(owned);
-    const url = `${window.location.href.split('?')[0]}?share=${encoded}`;
-    
-    await navigator.clipboard.writeText(url);
-    
-    btn.textContent = "Copied!";
-    btn.classList.add('copied');
-    setTimeout(() => {
-      btn.textContent = originalText;
-      btn.classList.remove('copied');
-    }, 2000);
-    
-  } catch (err) {
-    console.error(err);
-    alert("Error creating link");
+  if (optionsBtn) {
+    optionsBtn.addEventListener('click', (e) => { e.stopPropagation(); const isHidden = optionsPanel.classList.contains('hidden'); if (openDropdownPanel) closeOpenDropdown(); optionsPanel.classList.toggle('hidden', !isHidden); optionsBtn.classList.toggle('active', isHidden); });
+    toggleTagsBtn.addEventListener('click', (e) => { e.stopPropagation(); showTags = !showTags; toggleTagsBtn.classList.toggle('active', showTags); render(); });
+    toggleFodderBtn.addEventListener('click', (e) => { e.stopPropagation(); showFodder = !showFodder; toggleFodderBtn.classList.toggle('active', showFodder); render(); });
+    toggleNameBtn.addEventListener('click', (e) => { e.stopPropagation(); showName = !showName; toggleNameBtn.classList.toggle('active', showName); render(); });
+    toggleImgBtn.addEventListener('click', (e) => { 
+      e.stopPropagation(); isImgFull = !isImgFull; toggleImgBtn.textContent = isImgFull ? "Img: Full" : "Img: Icon"; document.body.className = isImgFull ? 'img-full' : ''; render(); 
+    });
   }
+  document.addEventListener('click', e => { if(openDropdownPanel && !openDropdownPanel.wrapper.contains(e.target)) { openDropdownPanel.classList.add('hidden'); openDropdownPanel.previousElementSibling.classList.remove('active'); openDropdownPanel=null; } if(!optionsPanel.classList.contains('hidden') && !optionsBtn.contains(e.target) && !optionsPanel.contains(e.target)) { optionsPanel.classList.add('hidden'); optionsBtn.classList.remove('active'); } });
+  
+  renderStaticFilters();
+  init();
 });
 
-// --- Filtres UI ---
-function createButtonGroup(label, optionsList, activeSet) {
-  const group = document.createElement('div');
-  group.className = 'filter-group';
-  const labelEl = document.createElement('div');
-  labelEl.className = 'filter-group-label';
-  labelEl.textContent = label + ' :';
-  group.appendChild(labelEl);
-  optionsList.forEach(option => {
-    const key = option; 
-    const b = document.createElement('button');
-    b.className = 'btn';
-    b.textContent = option;
-    b.dataset.key = key;
-    b.classList.toggle('active', activeSet.has(key));
-    b.addEventListener('click', e => {
-      e.stopPropagation(); 
-      if (activeSet.has(key)) activeSet.delete(key);
-      else activeSet.add(key);
-      b.classList.toggle('active', activeSet.has(key));
-      render();
-    });
-    group.appendChild(b);
-  });
-  return group;
+function createSplitButton(k,l,m) {
+  const w=document.createElement('div'); w.className='filter-btn-wrapper';
+  const b1=document.createElement('button'); b1.className='btn-main'; b1.textContent=cleanLabel(l);
+  const b2=document.createElement('button'); b2.className='btn-minus'; b2.textContent='-';
+  b1.onclick=()=>{ const v=m.get(k); if(v===1){m.delete(k);b1.classList.remove('active');}else{m.set(k,1);b1.classList.add('active');b2.classList.remove('exclude');} render(); };
+  b2.onclick=()=>{ const v=m.get(k); if(v===-1){m.delete(k);b2.classList.remove('exclude');}else{m.set(k,-1);b2.classList.add('exclude');b1.classList.remove('active');} render(); };
+  w.append(b1,b2); return w;
 }
-
-function createDropdown(label, optionsList, activeSet) {
-  const wrapper = document.createElement('div');
-  wrapper.className = 'dropdown-wrapper';
-  const btn = document.createElement('button');
-  btn.className = 'btn';
-  btn.textContent = label + ' ▾';
-  const panel = document.createElement('div');
-  panel.className = 'dropdown-panel hidden';
-  optionsList.forEach(option => {
-    const key = option;
-    const b = document.createElement('button');
-    b.className = 'btn';
-    b.textContent = option;
-    b.dataset.key = key;
-    b.classList.toggle('active', activeSet.has(key));
-    b.addEventListener('click', e => {
-      if (activeSet.has(key)) activeSet.delete(key);
-      else activeSet.add(key);
-      b.classList.toggle('active', activeSet.has(key));
-      render();
-    });
-    panel.appendChild(b);
-  });
-  btn.addEventListener('click', e => {
-    e.stopPropagation();
-    const isHidden = panel.classList.contains('hidden');
-    if (openDropdownPanel && openDropdownPanel.panel !== panel) closeOpenDropdown();
-    const optionsPanel = document.getElementById('options-panel');
-    if (optionsPanel && !optionsPanel.classList.contains('hidden')) {
-      optionsPanel.classList.add('hidden');
-      document.getElementById('btn-options').classList.remove('active');
-    }
-    panel.classList.toggle('hidden', !isHidden);
-    btn.classList.toggle('active', isHidden);
-    openDropdownPanel = isHidden ? { btn, panel, wrapper } : null;
-  });
-  wrapper.appendChild(btn);
-  wrapper.appendChild(panel);
-  return wrapper;
+function createButtonGroup(l,lst,m) { const g=document.createElement('div'); g.className='filter-group'; const lb=document.createElement('div'); lb.className='filter-group-label'; lb.textContent=l+' :'; g.appendChild(lb); lst.forEach(o=>g.appendChild(createSplitButton(o,o,m))); el.filterControls.appendChild(g); }
+function createDropdown(l,lst,m) {
+  const w=document.createElement('div'); w.className='dropdown-wrapper'; const b=document.createElement('button'); b.className='btn'; b.textContent=l+' ▾'; const p=document.createElement('div'); p.className='dropdown-panel hidden';
+  const h=document.createElement('div'); h.className='filter-btn-wrapper'; h.style.marginBottom='8px';
+  const all=document.createElement('button'); all.className='btn-main'; all.textContent='Select All'; all.style.textAlign='center'; all.style.color='var(--accent)';
+  all.onclick=()=>{ const on=lst.every(o=>m.get(o)===1); if(on){m.clear();Array.from(p.querySelectorAll('.btn-main')).forEach(x=>x.classList.remove('active'));Array.from(p.querySelectorAll('.btn-minus')).forEach(x=>x.classList.remove('exclude'));}else{lst.forEach(o=>m.set(o,1));Array.from(p.querySelectorAll('.btn-main')).forEach(x=>x.classList.add('active'));Array.from(p.querySelectorAll('.btn-minus')).forEach(x=>x.classList.remove('exclude'));} render(); };
+  const none=document.createElement('button'); none.className='btn-minus'; none.textContent='-'; none.style.color='#ff4444';
+  none.onclick=()=>{ const off=lst.every(o=>m.get(o)===-1); if(off){m.clear();Array.from(p.querySelectorAll('.btn-minus')).forEach(x=>x.classList.remove('exclude'));}else{lst.forEach(o=>m.set(o,-1));Array.from(p.querySelectorAll('.btn-minus')).forEach(x=>x.classList.add('exclude'));Array.from(p.querySelectorAll('.btn-main')).forEach(x=>x.classList.remove('active'));} render(); };
+  h.append(all,none); p.appendChild(h); lst.forEach(o=>p.appendChild(createSplitButton(o,o,m)));
+  b.onclick=(e)=>{e.stopPropagation(); if(openDropdownPanel && openDropdownPanel!==p) openDropdownPanel.classList.add('hidden'); p.classList.toggle('hidden'); b.classList.toggle('active',!p.classList.contains('hidden')); openDropdownPanel=p.classList.contains('hidden')?null:p; };
+  w.append(b,p); return w;
 }
-
 function renderStaticFilters() {
   el.filterControls.innerHTML = ''; 
-  const statusGroup = document.createElement('div');
-  statusGroup.className = 'filter-group';
-  const statusLabel = document.createElement('div');
-  statusLabel.className = 'filter-group-label';
-  statusLabel.textContent = 'Status :';
+  const statusGroup = document.createElement('div'); statusGroup.className = 'filter-group';
+  const statusLabel = document.createElement('div'); statusLabel.className = 'filter-group-label'; statusLabel.textContent = 'Status :';
   statusGroup.appendChild(statusLabel);
+  const ownedBtn = document.createElement('button'); ownedBtn.className = 'btn'; ownedBtn.textContent = 'Owned'; if (showMode === 'owned') ownedBtn.classList.add('active');
+  ownedBtn.addEventListener('click', () => { if (showMode === 'owned') { showMode = 'all'; ownedBtn.classList.remove('active'); } else { showMode = 'owned'; ownedBtn.classList.add('active'); notOwnedBtn.classList.remove('active'); } render(); });
+  const notOwnedBtn = document.createElement('button'); notOwnedBtn.className = 'btn'; notOwnedBtn.textContent = 'Unowned'; if (showMode === 'notowned') notOwnedBtn.classList.add('active');
+  notOwnedBtn.addEventListener('click', () => { if (showMode === 'notowned') { showMode = 'all'; notOwnedBtn.classList.remove('active'); } else { showMode = 'notowned'; notOwnedBtn.classList.add('active'); ownedBtn.classList.remove('active'); } render(); });
+  statusGroup.appendChild(ownedBtn); statusGroup.appendChild(notOwnedBtn); el.filterControls.appendChild(statusGroup);
   
-  const ownedBtn = document.createElement('button');
-  ownedBtn.className = 'btn';
-  ownedBtn.textContent = 'Owned';
-  if (showMode === 'owned') ownedBtn.classList.add('active');
+  createButtonGroup("Type", FIXED_RANGES, filterStates.ranges);
+  createButtonGroup("Role", FIXED_ROLES, filterStates.roles);
+  createButtonGroup("Gender", FIXED_GENDERS, filterStates.genders);
+  createButtonGroup("Kingdom", FIXED_KINGDOMS, filterStates.kingdoms);
+  createButtonGroup("Race", UI_RACES, filterStates.races);
+  createButtonGroup("Archetype", FIXED_ARCHETYPES, filterStates.archetypes);
   
-  ownedBtn.addEventListener('click', () => {
-    if (showMode === 'owned') { showMode = 'all'; ownedBtn.classList.remove('active'); }
-    else { showMode = 'owned'; ownedBtn.classList.add('active'); notOwnedBtn.classList.remove('active'); }
-    render();
-  });
-  
-  const notOwnedBtn = document.createElement('button');
-  notOwnedBtn.className = 'btn';
-  notOwnedBtn.textContent = 'Unowned';
-  if (showMode === 'notowned') notOwnedBtn.classList.add('active');
-  
-  notOwnedBtn.addEventListener('click', () => {
-    if (showMode === 'notowned') { showMode = 'all'; notOwnedBtn.classList.remove('active'); }
-    else { showMode = 'notowned'; notOwnedBtn.classList.add('active'); ownedBtn.classList.remove('active'); }
-    render();
-  });
-  
-  statusGroup.appendChild(ownedBtn);
-  statusGroup.appendChild(notOwnedBtn);
-  el.filterControls.appendChild(statusGroup);
-  
-  el.filterControls.appendChild(createButtonGroup("Type", FIXED_RANGES, activeRanges));
-  el.filterControls.appendChild(createButtonGroup("Role", FIXED_ROLES, activeRoles));
-  el.filterControls.appendChild(createButtonGroup("Gender", FIXED_GENDERS, activeGenders));
-  el.filterControls.appendChild(createButtonGroup("Kingdom", FIXED_KINGDOMS, activeKingdoms));
-  el.filterControls.appendChild(createButtonGroup("Race", UI_RACES, activeRaces));
-  el.filterControls.appendChild(createButtonGroup("Archetype", FIXED_ARCHETYPES, activeArchetypes));
-  
-  const dropdownGroup = document.createElement('div');
-  dropdownGroup.className = 'filter-group';
-  dropdownGroup.appendChild(createDropdown("Seasonal", FIXED_SEASONAL, activeSeasonal));
-  dropdownGroup.appendChild(createDropdown("Crossover", FIXED_CROSSOVER, activeCrossover));
-  el.filterControls.appendChild(dropdownGroup);
+  const specGroup = document.createElement('div'); specGroup.className = 'filter-group';
+  const specLabel = document.createElement('div'); specLabel.className = 'filter-group-label'; specLabel.textContent = 'Special :';
+  specGroup.appendChild(specLabel);
+  const d1 = createDropdown("Seasonal", FIXED_SEASONAL, filterStates.seasonal);
+  const d2 = createDropdown("Crossover", FIXED_CROSSOVER, filterStates.crossover);
+  specGroup.append(d1, d2);
+  el.filterControls.appendChild(specGroup);
 }
 
-document.addEventListener('click', (e) => {
-  const optionsPanel = document.getElementById('options-panel');
-  if (optionsPanel && !optionsPanel.classList.contains('hidden') && !optionsPanel.parentElement.contains(e.target)) {
-    optionsPanel.classList.add('hidden');
-    document.getElementById('btn-options').classList.remove('active');
-    if (openDropdownPanel && openDropdownPanel.panel === optionsPanel) openDropdownPanel = null;
-  }
-  if (openDropdownPanel && !openDropdownPanel.wrapper.contains(e.target)) closeOpenDropdown();
-});
-
-function closeOpenDropdown() {
-  if (openDropdownPanel) {
-    openDropdownPanel.panel.classList.add('hidden');
-    openDropdownPanel.btn.classList.remove('active');
-    openDropdownPanel = null;
-  }
-}
-
-// --- Import / Export ---
-function exportData(){
-  const data={owned:[...owned],units};
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='aigis-collection.json';
-  a.click();
-}
-document.getElementById('btn-export').addEventListener('click',exportData);
-document.getElementById('btn-import').addEventListener('click',()=>document.getElementById('file-input').click());
-
-document.getElementById('file-input').addEventListener('change',async e=>{
-  const f=e.target.files[0];if(!f) return;
-  try{
-    const txt=await f.text();
-    const parsed=JSON.parse(txt);
-    if(parsed.owned) owned=new Set(parsed.owned);
-    if(parsed.units && Array.isArray(parsed.units)) {
-      units=parsed.units.map(processUnitData);
-      saveUnitsToCache(units);
-    }
-    if(!isSharedMode) saveOwned();
-    render(); 
-  }catch(err){alert('Invalid JSON file');}
-});
-
-// --- Options Dropdown ---
-const optionsBtn = document.getElementById('btn-options');
-const optionsPanel = document.getElementById('options-panel');
-const toggleTagsBtn = document.getElementById('btn-toggle-tags');
-const toggleFodderBtn = document.getElementById('btn-toggle-fodder');
-
-if (optionsBtn) {
-  const optionsWrapper = optionsBtn.parentElement;
-  optionsBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const isHidden = optionsPanel.classList.contains('hidden');
-    if (openDropdownPanel && openDropdownPanel.panel !== optionsPanel) closeOpenDropdown();
-    optionsPanel.classList.toggle('hidden', !isHidden);
-    optionsBtn.classList.toggle('active', isHidden);
-    openDropdownPanel = isHidden ? { btn: optionsBtn, panel: optionsPanel, wrapper: optionsWrapper, id: 'optionsPanel' } : null;
-  });
-  toggleTagsBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    showTags = !showTags;
-    toggleTagsBtn.classList.toggle('active', showTags);
-    render();
-  });
-  toggleFodderBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    showFodder = !showFodder;
-    toggleFodderBtn.classList.toggle('active', showFodder);
-    render();
-  });
-}
-
-// --- API Logic ---
-async function safeFetch(url,opts={},timeout=15000){const ctl=new AbortController();const id=setTimeout(()=>ctl.abort(),timeout);try{return await fetch(url,{...opts,signal:ctl.signal});}finally{clearTimeout(id);}}
+// --- API FETCH (LINEAR V44 / V79) ---
+async function safeFetch(url) { const res = await fetch(url); if(!res.ok) throw new Error('Network error'); return res; }
 
 async function fetchAllCategoryMembers(){
-  const all=[];let cmcontinue=null;
-  do{
-    const url=`${API}?action=query&list=categorymembers&cmtitle=Category:Rarity:Black&cmlimit=500&format=json&origin=*`+(cmcontinue?`&cmcontinue=${encodeURIComponent(cmcontinue)}`:'');
-    const res=await safeFetch(url);
-    if(!res.ok) throw new Error('network');
-    const data=await res.json();
-    all.push(...(data.query&&data.query.categorymembers?data.query.categorymembers:[]));
-    cmcontinue=data.continue&&data.continue.cmcontinue?data.continue.cmcontinue:null;
-  }while(cmcontinue);
-  return all
+  const all=[]; let c=null;
+  do { const res=await safeFetch(`${API}?action=query&list=categorymembers&cmtitle=Category:Rarity:Black&cmlimit=500&format=json&origin=*`+(c?`&cmcontinue=${c}`:'')); const d=await res.json(); all.push(...d.query.categorymembers); c=d.continue?.cmcontinue; } while(c);
+  return all;
 }
 
-async function fetchDetails(pageids){
-  if(!pageids.length) return {};
-  const out={};const chunk=50;
-  for(let i=0;i<pageids.length;i+=chunk){
-    const slice=pageids.slice(i,i+chunk).join('|');
-    const url=`${API}?action=query&pageids=${slice}&prop=pageimages|categories|extracts&piprop=original&exintro=1&explaintext=1&cllimit=500&format=json&formatversion=2&origin=*`;
-    try{
-      const res=await safeFetch(url);
-      if(!res.ok) continue;
-      const data=await res.json();
-      if(data.query&&data.query.pages){
-        data.query.pages.forEach(p=>{
-          out[p.pageid]=out[p.pageid]||{title:p.title,image:null,categories:[]};
-          if(p.original&&p.original.source) out[p.pageid].image=p.original.source;
-          out[p.pageid].categories=(p.categories||[]).map(c=>normalize(c.title||c));
-        });
-      }
-    }catch(e){console.warn('chunk failed',e);}
-  }
-  return out;
-}
-
-async function fetchDataFromWiki() {
-  el.loading.textContent = 'Downloading Wiki Data... (This may take a moment)';
-  el.loading.classList.remove('hidden');
+// SNIPER ENGINE
+async function initFromWiki(){
+  el.loading.textContent='Downloading List...'; el.loading.classList.remove('hidden');
   try {
-    const members = await fetchAllCategoryMembers();
-    const pageids = members.map(m=>m.pageid);
-    const details = await fetchDetails(pageids);
-    units = members.map(m => {
-      const d = details[m.pageid]||{title:m.title,image:'',categories:[]};
-      return processUnitData({
-        pageid: m.pageid,
-        title: d.title || m.title,
-        image: d.image,
-        categories: d.categories
-      });
+    const list=await fetchAllCategoryMembers();
+    
+    el.loading.textContent='Hunting Icons (This may take 15s)...';
+    // Generate Candidates
+    const candidates=[]; const unitMap=new Map();
+    list.forEach(m=>{
+      let base=m.title.replace(/ \(Black\)/,'').trim();
+      let c1=`File:${base} AW Icon.png`, c2=`File:${base} Icon.png`, c3=`File:${m.title} AW Icon.png`, c4=`File:${m.title} Icon.png`;
+      unitMap.set(c1,m.pageid); unitMap.set(c2,m.pageid); unitMap.set(c3,m.pageid); unitMap.set(c4,m.pageid);
+      candidates.push(c1,c2,c3,c4);
     });
-    saveUnitsToCache(units);
-    render();
-    el.loading.classList.add('hidden');
-  } catch(e) {
-    console.error(e);
-    el.loading.textContent = 'API Error (Check console or try refresh)';
-  }
+    
+    // Batch Check
+    const unique=[...new Set(candidates)]; const validIcons=new Map();
+    for(let i=0;i<unique.length;i+=50){
+      const s=unique.slice(i,i+50).join('|');
+      try {
+        const res=await safeFetch(`${API}?action=query&titles=${s}&prop=imageinfo&iiprop=url&format=json&origin=*`); const d=await res.json();
+        if(d.query?.pages) Object.values(d.query.pages).forEach(p=>{
+          if(!p.missing && p.imageinfo){
+            const uid=unitMap.get(p.title);
+            if(uid && (!validIcons.has(uid) || p.title.includes('AW'))) validIcons.set(uid, p.imageinfo[0].url);
+          }
+        });
+      } catch(e){}
+    }
+    
+    el.loading.textContent='Downloading Details...';
+    const details={}; const ids=list.map(m=>m.pageid);
+    for(let i=0;i<ids.length;i+=50) {
+      const s=ids.slice(i,i+50).join('|');
+      try {
+        const res=await safeFetch(`${API}?action=query&pageids=${s}&prop=pageimages|categories&pithumbsize=150&cllimit=500&format=json&formatversion=2&origin=*`);
+        const d=await res.json(); d.query.pages.forEach(p=>details[p.pageid]=p);
+      } catch(e){}
+    }
+    
+    units=list.map(m=>{
+      const d=details[m.pageid]||{title:m.title};
+      let icon=validIcons.get(m.pageid);
+      let full=d.thumbnail?.source || d.original?.source;
+      return processUnitData({ pageid:m.pageid, title:m.title, imgIcon:icon, imgFull:full, categories:(d.categories||[]).map(c=>c.title) });
+    });
+    
+    saveUnitsToCache(units); render(); el.loading.classList.add('hidden');
+    
+  } catch(e){ el.loading.textContent='Error'; console.error(e); }
 }
 
-// Lance init
-init();
+async function init() {
+  const cachedData = localStorage.getItem(LOCAL_DATA_KEY);
+  let hasCache = false;
+  if (cachedData) { try { const d = JSON.parse(cachedData); if (Date.now() - d.timestamp < 86400000 && Array.isArray(d.units)) { units = d.units; hasCache = true; render(); el.loading.classList.add('hidden'); } } catch(e) {} }
+  if (!hasCache) { await initFromWiki(); }
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.has('share')) { try { owned = await decompressData(urlParams.get('share')); isSharedMode = true; showMode = 'owned'; document.getElementById('shared-banner').classList.remove('hidden'); document.body.classList.add('read-only'); document.querySelectorAll('.filter-controls button').forEach(b => { if(b.textContent === 'Owned') b.classList.add('active'); if(b.textContent === 'Unowned') b.classList.remove('active'); }); } catch(e) {} } else { owned = new Set(JSON.parse(localStorage.getItem(LOCAL_OWNED_KEY)||'[]')); }
+  render(); updateStats();
+}
 </script>
 </body>
 </html>
