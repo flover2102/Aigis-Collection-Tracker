@@ -797,31 +797,50 @@ async function initFromWiki(){
 }
 
 async function init() {
+  try {
+      const storedOwned = localStorage.getItem(LOCAL_OWNED_KEY);
+      if (storedOwned) {
+          owned = new Set(JSON.parse(storedOwned));
+      }
+  } catch(e) { console.error("Error loading owned list", e); }
   const cachedData = localStorage.getItem(LOCAL_DATA_KEY);
-  let hasCache = false;
+  let unitsLoaded = false;
   if (cachedData) { 
       try { 
-          const d = JSON.parse(cachedData); 
+          const d = await decompressFromB64(cachedData);
           if (Date.now() - d.timestamp < 86400000 && Array.isArray(d.units)) { 
               units = d.units; 
               unitMap.clear();
               units.forEach(u => unitMap.set(u.id, u));
-              hasCache = true; 
-              render(); 
-              el.loading.classList.add('hidden'); 
+              unitsLoaded = true;
           } 
-      } catch(e) {} 
+      } catch(e) { console.warn('Cache invalide', e); } 
+  }
+  if (!unitsLoaded) { 
+      await initFromWiki(); 
   }
 
   filterStates.rarity.set('Black', 1);
 
-  if (!hasCache) { await initFromWiki(); }
-  
   const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.has('share')) { try { owned = await decompressData(urlParams.get('share')); isSharedMode = true; showMode = 'owned'; document.getElementById('shared-banner').classList.remove('hidden'); document.body.classList.add('read-only'); document.querySelectorAll('.filter-controls button').forEach(b => { if(b.textContent === 'Owned') b.classList.add('active'); if(b.textContent === 'Unowned') b.classList.remove('active'); }); } catch(e) {} } else { owned = new Set(JSON.parse(localStorage.getItem(LOCAL_OWNED_KEY)||'[]')); }
-  
+  if (urlParams.has('share') && units.length > 0) { 
+      try { 
+          owned = await decompressData(urlParams.get('share')); 
+          isSharedMode = true; 
+          showMode = 'owned'; 
+          document.getElementById('shared-banner').classList.remove('hidden'); 
+          document.body.classList.add('read-only'); 
+          document.querySelectorAll('.filter-controls button').forEach(b => { 
+              if(b.textContent === 'Owned') b.classList.add('active'); 
+              if(b.textContent === 'Unowned') b.classList.remove('active'); 
+          }); 
+      } catch(e) { console.error("Share link error", e); } 
+  } 
+
+  el.loading.classList.add('hidden'); 
+  render();
   updateView();
-  renderStaticFilters();
+  renderStaticFilters(); 
 }
 </script>
 </body>
