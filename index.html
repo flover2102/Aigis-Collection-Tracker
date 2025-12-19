@@ -370,10 +370,10 @@ function processUnitData(u) {
     const pid = parseInt(u.pageid || u.id, 10) || 0;
     
     let r = 'Gold';
-    if(apiTags.some(t => t.includes('Black'))) r = 'Black';
-    else if(apiTags.some(t => t.includes('Platinum'))) r = 'Platinum';
-    else if(apiTags.some(t => t.includes('Gold'))) r = 'Gold';
-    else if(apiTags.some(t => t.includes('Sapphire'))) r = 'Sapphire';
+    if(apiTags.some(t => t === 'Rarity:Black' || t === 'Black Units')) r = 'Black';
+    else if(apiTags.some(t => t === 'Rarity:Platinum' || t === 'Platinum Units')) r = 'Platinum';
+    else if(apiTags.some(t => t === 'Rarity:Gold' || t === 'Gold Units')) r = 'Gold';
+    else if(apiTags.some(t => t === 'Rarity:Sapphire' || t === 'Sapphire Units')) r = 'Sapphire';
     
     return { 
         id: String(pid), numericId: pid, 
