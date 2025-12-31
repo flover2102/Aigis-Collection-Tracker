@@ -201,6 +201,8 @@ body { font-family: Inter, system-ui, sans-serif; background: var(--bg); color: 
   text-align: center; cursor: pointer; position: relative; min-height: 120px;
   transition: transform 0.1s ease-out, background 0.1s; display: flex; flex-direction: column; align-items: center;
   content-visibility: auto; contain-intrinsic-size: 110px 140px;
+  content-visibility: auto; 
+  contain-intrinsic-size: 110px 140px; 
 }
 .card:hover { background: rgba(255,255,255,0.08); transform: translateY(-2px); }
 .card.owned { outline: 2px solid var(--accent); background: rgba(44, 72, 55, 0.4); }
@@ -257,6 +259,9 @@ body.img-full .card img { width: 100%; height: 120px; background: transparent; }
         <button id="btn-options" class="btn">Options ▾</button>
         <div id="options-panel" class="dropdown-panel hidden" style="right:0;left:auto;min-width:160px;">
           <button id="btn-toggle-imgmode" class="btn">Img: Icon</button>
+          <!-- NOUVEAU BOUTON AW -->
+          <button id="btn-toggle-aw" class="btn">Icon: Normal</button>
+          
           <button id="btn-toggle-name" class="btn active">Show Name</button>
           <button id="btn-toggle-tags" class="btn">Show Tags</button>
           <button id="btn-toggle-fodder" class="btn">Show Fodder</button>
@@ -281,11 +286,12 @@ body.img-full .card img { width: 100%; height: 120px; background: transparent; }
   <div id="grid" class="grid" aria-live="polite"></div>
 </div>
 
+
 <script>
 const API='https://aigis.fandom.com/api.php';
 const LOCAL_OWNED_KEY='aigis-owned-v6';
-// V93: New Button Styles
-const LOCAL_DATA_KEY='aigis-units-cache-v93'; 
+// CHANGEMENT CLÉ CACHE V2 POUR NOUVELLE STRUCTURE IMAGES
+const LOCAL_DATA_KEY='aigis-units-cache-gzip-v2'; 
 
 let units=[];
 let unitMap=new Map();
@@ -298,6 +304,7 @@ let showTags = false;
 let showFodder = false;
 let showName = true;
 let isImgFull = false; 
+let showAW = false; // Par défaut : Normal
 let openDropdownPanel = null;
 
 const LABEL_MAP = { "Angels Race": "Angels", "Hermits Race": "Hermits", "Deep Sea Units": "Deep Sea", "Makai Units": "Makai", "Male Units": "Male", "Female Units": "Female", "Koihime Units": "Koihime", "Elves": "Elf", "Desert Country": "Desert", "Flower Country": "Flower", "Eastern Country": "Eastern", "New Year's Units": "New Year", "Valentine's Day Units": "Valentine", "Hot Springs Units": "Hot Springs", "Easter Hunts": "Easter", "School Units": "School", "June Bride Units": "Bride", "Summer Units": "Summer", "Halloween Units": "Halloween", "Christmas Units": "Christmas", "Kingdom of Pars": "Pars", "Seven Deadly Sins": "7 Deadly Sins", "Hero Units": "Hero", "Player Units": "Player" };
@@ -326,13 +333,75 @@ function debounce(func, wait) {
   };
 }
 
+// --- GZIP COMPRESSION UTILS ---
+
+// Convert ArrayBuffer to Base64
+function bufferToBase64(buffer) {
+    let binary = '';
+    const bytes = new Uint8Array(buffer);
+    const len = bytes.byteLength;
+    for (let i = 0; i < len; i++) binary += String.fromCharCode(bytes[i]);
+    return window.btoa(binary);
+}
+
+// Convert Base64 to ArrayBuffer
+function base64ToBuffer(base64) {
+    const binary_string = window.atob(base64);
+    const len = binary_string.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) bytes[i] = binary_string.charCodeAt(i);
+    return bytes.buffer;
+}
+
+// Compress Object -> Gzip -> Base64 String (For LocalStorage)
+async function compressToB64(data) {
+    const jsonStr = JSON.stringify(data);
+    const stream = new Blob([jsonStr]).stream().pipeThrough(new CompressionStream("gzip"));
+    const buffer = await new Response(stream).arrayBuffer();
+    return bufferToBase64(buffer);
+}
+
+// Decompress Base64 String -> Gzip -> Object (For LocalStorage)
+async function decompressFromB64(b64String) {
+    const buffer = base64ToBuffer(b64String);
+    const stream = new Blob([buffer]).stream().pipeThrough(new DecompressionStream("gzip"));
+    return await new Response(stream).json();
+}
+
+// Compress Object -> Blob (For File Export)
+async function compressToBlob(data) {
+    const jsonStr = JSON.stringify(data);
+    const stream = new Blob([jsonStr]).stream().pipeThrough(new CompressionStream("gzip"));
+    return await new Response(stream).blob();
+}
+
+// Decompress ArrayBuffer/Blob -> Object (For File Import)
+async function decompressFromBuffer(buffer) {
+    try {
+        const stream = new Blob([buffer]).stream().pipeThrough(new DecompressionStream("gzip"));
+        return await new Response(stream).json();
+    } catch (e) {
+        // Fallback: maybe it's a legacy JSON file (not compressed)
+        const text = new TextDecoder().decode(buffer);
+        return JSON.parse(text);
+    }
+}
+
+// --- LEGACY URL COMPRESSION (KEEPING FOR SHARE LINKS) ---
 async function compressData(ownedSet) { const refUnits = [...units].sort((a,b) => a.numericId - b.numericId); const numBytes = Math.ceil(refUnits.length / 8); const buffer = new Uint8Array(numBytes); refUnits.forEach((u, index) => { if (ownedSet.has(u.id)) buffer[Math.floor(index/8)] |= (1 << (index%8)); }); const stream = new Blob([buffer]).stream().pipeThrough(new CompressionStream("gzip")); const response = await new Response(compressed = stream); let base64 = btoa(String.fromCharCode(...new Uint8Array(await response.arrayBuffer()))); return 'v2-' + base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
 async function decompressData(encodedString) { let base64 = encodedString.startsWith('v2-') ? encodedString.substring(3) : encodedString; let str = base64.replace(/-/g, '+').replace(/_/g, '/'); while (str.length % 4) str += '='; const stream = new Blob([Uint8Array.from(atob(str), c => c.charCodeAt(0))]).stream().pipeThrough(new DecompressionStream("gzip")); const response = await new Response(stream); const bitmap = new Uint8Array(await response.arrayBuffer()); const result = new Set(); const refUnits = [...units].sort((a,b) => a.numericId - b.numericId); refUnits.forEach((u, index) => { if (Math.floor(index/8) < bitmap.length && (bitmap[Math.floor(index/8)] & (1 << (index%8)))) result.add(u.id); }); return result; }
 
-function saveUnitsToCache(data) { 
+// --- CACHE & DATA MANAGEMENT ---
+
+async function saveUnitsToCache(data) { 
   const cleanData = data.map(u => { const { categories, ...rest } = u; return rest; });
-  try { localStorage.setItem(LOCAL_DATA_KEY, JSON.stringify({ timestamp: Date.now(), units: cleanData })); } catch(e) { console.warn("Cache full"); } 
+  try { 
+      // NEW: Compress before saving
+      const compressed = await compressToB64({ timestamp: Date.now(), units: cleanData });
+      localStorage.setItem(LOCAL_DATA_KEY, compressed); 
+  } catch(e) { console.warn("Cache save failed", e); } 
 }
+
 function saveOwned(){ if (!isSharedMode) localStorage.setItem(LOCAL_OWNED_KEY,JSON.stringify([...owned])); }
 
 function updateStats(){
@@ -370,15 +439,16 @@ function processUnitData(u) {
     const pid = parseInt(u.pageid || u.id, 10) || 0;
     
     let r = 'Gold';
-    if(apiTags.some(t => t === 'Rarity:Black' || t === 'Black Units')) r = 'Black';
-    else if(apiTags.some(t => t === 'Rarity:Platinum' || t === 'Platinum Units')) r = 'Platinum';
-    else if(apiTags.some(t => t === 'Rarity:Gold' || t === 'Gold Units')) r = 'Gold';
-    else if(apiTags.some(t => t === 'Rarity:Sapphire' || t === 'Sapphire Units')) r = 'Sapphire';
+    if (apiTags.some(t => t === 'Black Units' || t === 'Rarity:Black')) r = 'Black';
+    else if (apiTags.some(t => t === 'Platinum Units' || t === 'Rarity:Platinum')) r = 'Platinum';
+    else if (apiTags.some(t => t === 'Gold Units' || t === 'Rarity:Gold')) r = 'Gold';
+    else if (apiTags.some(t => t === 'Sapphire Units' || t === 'Rarity:Sapphire')) r = 'Sapphire';
     
     return { 
         id: String(pid), numericId: pid, 
         title: normalize(u.title || u.pageTitle || u.name), 
-        imgIcon: u.imgIcon, imgFull: u.imgFull, 
+        // PASSE-PLAT POUR LES IMAGES
+        imgIconNormal: u.imgIconNormal, imgIconAW: u.imgIconAW, imgFull: u.imgFull, 
         apiTags: apiTags, tags: u.tags || [], 
         rarity: r, 
         range: determineRange(apiTags), 
@@ -439,7 +509,20 @@ function createCardDOM(u) {
     if(owned.has(u.id)) card.classList.add('owned');
     const checkbox = document.createElement('div'); checkbox.className = 'check-indicator'; card.appendChild(checkbox);
     
-    let src = isImgFull ? (u.imgFull || u.imgIcon) : (u.imgIcon || u.imgFull);
+    // --- NOUVELLE LOGIQUE DE SÉLECTION D'IMAGE ---
+    let src;
+    if (isImgFull) {
+        src = u.imgFull || u.imgIconAW || u.imgIconNormal;
+    } else {
+        if (showAW) {
+             // Si on veut AW, on priorise AW, sinon Normal
+             src = u.imgIconAW || u.imgIconNormal;
+        } else {
+             // Si on veut Normal, on priorise Normal, sinon AW (Fallback Hero Units)
+             src = u.imgIconNormal || u.imgIconAW;
+        }
+    }
+    
     if(src) { 
         const img=document.createElement('img'); 
         img.src=src; img.alt=u.title; img.loading = "lazy"; img.decoding = "async";
@@ -565,14 +648,48 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(()=> {btn.textContent=txt; btn.classList.remove('copied')}, 1500);
     } catch(x){alert('Error');}
   });
-  document.getElementById('btn-export').onclick = () => { const b=new Blob([JSON.stringify({owned:[...owned],units})],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='aigis.json'; a.click(); };
+
+  // --- NEW EXPORT LOGIC (GZIP BLOB) ---
+  document.getElementById('btn-export').onclick = async () => { 
+      const data = {owned:[...owned], units};
+      const blob = await compressToBlob(data); // Returns a Gzip Blob
+      const a=document.createElement('a'); 
+      a.href=URL.createObjectURL(blob); 
+      a.download='aigis-data.json.gz'; // Extension gz
+      a.click(); 
+  };
+
   document.getElementById('btn-import').onclick = () => document.getElementById('file-input').click();
-  document.getElementById('file-input').onchange = async (e) => { try{ const d=JSON.parse(await e.target.files[0].text()); if(d.owned) owned=new Set(d.owned); if(d.units) {units=d.units; units.forEach(u => unitMap.set(u.id, u)); saveUnitsToCache(units);} if(!isSharedMode) saveOwned(); render(); }catch(x){} };
+  
+  // --- NEW IMPORT LOGIC (GZIP SUPPORT) ---
+  document.getElementById('file-input').onchange = async (e) => { 
+      try {
+          const file = e.target.files[0];
+          const buffer = await file.arrayBuffer();
+          // Try decompressing, fall back to JSON.parse if it fails
+          const d = await decompressFromBuffer(buffer);
+
+          if(d.owned) owned=new Set(d.owned); 
+          if(d.units) {
+              units=d.units; 
+              units.forEach(u => unitMap.set(u.id, u)); 
+              // Don't forget to await the compressed save
+              await saveUnitsToCache(units);
+          } 
+          if(!isSharedMode) saveOwned(); 
+          render(); 
+      } catch(x){
+          console.error(x);
+          alert('Import failed: Invalid file format.');
+      } 
+  };
+  
   document.getElementById('btn-exit-share').onclick = () => { window.location.href = window.location.pathname; };
 
   const optionsBtn = document.getElementById('btn-options'); const optionsPanel = document.getElementById('options-panel');
   const toggleTagsBtn = document.getElementById('btn-toggle-tags'); const toggleFodderBtn = document.getElementById('btn-toggle-fodder');
   const toggleNameBtn = document.getElementById('btn-toggle-name'); const toggleImgBtn = document.getElementById('btn-toggle-imgmode');
+  const toggleAWBtn = document.getElementById('btn-toggle-aw');
   
   if (optionsBtn) {
     optionsBtn.addEventListener('click', (e) => { e.stopPropagation(); const isHidden = optionsPanel.classList.contains('hidden'); if (openDropdownPanel) closeOpenDropdown(); optionsPanel.classList.toggle('hidden', !isHidden); optionsBtn.classList.toggle('active', isHidden); });
@@ -580,6 +697,15 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleNameBtn.addEventListener('click', (e) => { e.stopPropagation(); showName = !showName; toggleNameBtn.classList.toggle('active', showName); render(); });
     toggleFodderBtn.addEventListener('click', (e) => { e.stopPropagation(); showFodder = !showFodder; toggleFodderBtn.classList.toggle('active', showFodder); updateView(); });
     toggleImgBtn.addEventListener('click', (e) => { e.stopPropagation(); isImgFull = !isImgFull; toggleImgBtn.textContent = isImgFull ? "Img: Full" : "Img: Icon"; document.body.className = isImgFull ? 'img-full' : ''; render(); });
+    
+    // NOUVEL EVENT LISTENER AW
+    toggleAWBtn.addEventListener('click', (e) => { 
+        e.stopPropagation(); 
+        showAW = !showAW; 
+        toggleAWBtn.textContent = showAW ? "Icon: AW" : "Icon: Normal"; 
+        toggleAWBtn.classList.toggle('active', showAW);
+        if (!isImgFull) render(); 
+    });
   }
   document.addEventListener('click', e => { if(openDropdownPanel && !openDropdownPanel.wrapper.contains(e.target)) { openDropdownPanel.classList.add('hidden'); openDropdownPanel.previousElementSibling.classList.remove('active'); openDropdownPanel=null; } if(!optionsPanel.classList.contains('hidden') && !optionsBtn.contains(e.target) && !optionsPanel.contains(e.target)) { optionsPanel.classList.add('hidden'); optionsBtn.classList.remove('active'); } });
   
@@ -711,7 +837,8 @@ async function initFromWiki(){
     units = list.map(m => ({
       id: String(m.pageid), numericId: parseInt(m.pageid), 
       title: m.title.replace(/^Category:/i,'').replace(/_/g,' ').trim(),
-      imgIcon: null, imgFull: null, 
+      // INIT IMAGES NULL
+      imgIconNormal: null, imgIconAW: null, imgFull: null, 
       apiTags: [], tags: [], rarity: 'Black', range: 'Melee', genders: [], roles: [], kingdoms: [], races: [], archetypes: [], seasonal: [], crossover: [], isFodder: false
     }));
     
@@ -746,16 +873,28 @@ async function initFromWiki(){
                         const uid = String(candidateToId.get(p.title));
                         if(!uid) return;
                         const u = unitMap.get(uid);
-                        if(u && (!u.imgIcon || p.title.includes('AW'))) {
-                            u.imgIcon = p.imageinfo[0].url;
+                        if(u) {
+                            const url = p.imageinfo[0].url;
+                            // TRI DES IMAGES NORMAL VS AW
+                            if(p.title.includes('AW Icon')) {
+                                u.imgIconAW = url;
+                            } else {
+                                u.imgIconNormal = url;
+                            }
+
+                            // Mise à jour visuelle immédiate
                             const card = document.querySelector(`.card[data-id="${uid}"]`);
                             if(card) {
+                                // On affiche ce qu'on a sous la main pour le feedback visuel
+                                // Si AW demandé, on préfère AW, sinon Normal
+                                const displaySrc = showAW ? (u.imgIconAW || u.imgIconNormal) : (u.imgIconNormal || u.imgIconAW);
+
                                 const existingImg = card.querySelector('img');
-                                if(!existingImg) {
+                                if(!existingImg && displaySrc) {
                                     const noImg = card.querySelector('.no-img'); if(noImg) noImg.remove();
-                                    const img = document.createElement('img'); img.src = u.imgIcon; img.alt = u.title; img.loading = "lazy"; img.decoding="async";
+                                    const img = document.createElement('img'); img.src = displaySrc; img.alt = u.title; img.loading = "lazy"; img.decoding="async";
                                     const titleEl = card.querySelector('.title'); if(titleEl) card.insertBefore(img, titleEl); else card.appendChild(img);
-                                } else if(p.title.includes('AW')) existingImg.src = u.imgIcon;
+                                }
                             }
                         }
                     }
@@ -786,7 +925,7 @@ async function initFromWiki(){
     });
 
     await Promise.all([...iconPromises, ...detailPromises]);
-    saveUnitsToCache(units); 
+    await saveUnitsToCache(units); 
     render(); 
     el.loading.classList.add('hidden');
     
@@ -797,14 +936,20 @@ async function initFromWiki(){
 }
 
 async function init() {
+  // ÉTAPE 1 : Charger la liste "Owned" locale (Instantané)
+  // On prépare le terrain. Si on a des unités, elles seront prêtes à être cochées.
   try {
       const storedOwned = localStorage.getItem(LOCAL_OWNED_KEY);
       if (storedOwned) {
           owned = new Set(JSON.parse(storedOwned));
       }
   } catch(e) { console.error("Error loading owned list", e); }
+
+  // ÉTAPE 2 : Charger les Unités (Cache ou Wiki)
   const cachedData = localStorage.getItem(LOCAL_DATA_KEY);
   let unitsLoaded = false;
+  
+  // A. Essai via le Cache
   if (cachedData) { 
       try { 
           const d = await decompressFromB64(cachedData);
@@ -816,32 +961,47 @@ async function init() {
           } 
       } catch(e) { console.warn('Cache invalide', e); } 
   }
+
+  // B. Si pas de cache valide, on télécharge (Wiki)
   if (!unitsLoaded) { 
+      // initFromWiki dessine déjà pour montrer la progression, c'est normal
       await initFromWiki(); 
   }
 
   filterStates.rarity.set('Black', 1);
 
+  // ÉTAPE 3 : Gestion du lien de partage (Share Mode)
+  // On le fait MAINTENANT car on a besoin que 'units' soit chargé pour décompresser l'URL
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.has('share') && units.length > 0) { 
       try { 
+          // On écrase la liste 'owned' locale par celle de l'URL
           owned = await decompressData(urlParams.get('share')); 
           isSharedMode = true; 
           showMode = 'owned'; 
+          
+          // Mise à jour de l'interface spécifique au mode partage
           document.getElementById('shared-banner').classList.remove('hidden'); 
           document.body.classList.add('read-only'); 
+          
+          // On force visuellement les boutons de filtres
           document.querySelectorAll('.filter-controls button').forEach(b => { 
               if(b.textContent === 'Owned') b.classList.add('active'); 
               if(b.textContent === 'Unowned') b.classList.remove('active'); 
           }); 
       } catch(e) { console.error("Share link error", e); } 
   } 
-
+  
+  // ÉTAPE 4 : RENDER FINAL
+  // On ne dessine qu'une seule fois ici, avec la certitude d'avoir :
+  // 1. Les unités
+  // 2. La bonne liste owned (Locale OU Partagée)
   el.loading.classList.add('hidden'); 
   render();
-  updateView();
-  renderStaticFilters(); 
+  updateView(); // Applique les filtres (comme showMode = 'owned')
+  renderStaticFilters(); // Met à jour l'état visuel des boutons filtres
 }
+
 </script>
 </body>
 </html>
