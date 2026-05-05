@@ -6,9 +6,11 @@
 <meta name="referrer" content="no-referrer" />
 <meta name="description" content="Aigis Collection Tracker">
 
-<title>Aigis — Collection Tracker (Black, Platinum & Gold Chibi)</title>
+<title>Aigis — Collection Tracker</title>
 <style>
-/* --- THEME --- */
+/* =========================================
+   THEME & VARIABLES
+   ========================================= */
 :root{
   --accent: #5bff9e;
   --accent-muted: #2c4837;
@@ -26,6 +28,8 @@
   --header-plat-text: #e0f2fe;
   --header-gold-bg: linear-gradient(90deg, rgba(253, 224, 71, 0.15) 0%, rgba(253, 224, 71, 0.02) 100%);
   --header-gold-text: #fef08a;
+  --header-prince-bg: linear-gradient(90deg, rgba(168, 85, 247, 0.20) 0%, rgba(168, 85, 247, 0.02) 100%);
+  --header-prince-text: #d8b4fe;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -33,201 +37,172 @@ body { font-family: Inter, system-ui, sans-serif; background: var(--bg); color: 
 .container { max-width: 1200px; margin: 18px auto; padding: 18px; }
 .hidden { display: none !important; }
 
-/* --- HEADER --- */
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
+/* =========================================
+   HEADER & VIEW MODES
+   ========================================= */
+.header { 
+  display: flex; justify-content: space-between; align-items: flex-start; 
+  gap: 16px; margin-bottom: 16px; flex-wrap: wrap; 
 }
-
 .title-group { display: flex; flex-direction: column; gap: 12px; }
 .h1 { font-size: 20px; font-weight: 700; margin: 0; color: #fff; }
 
-/* --- BANDEAU VIEW MODE --- */
-.shared-banner {
-  background: rgba(13, 37, 56, 0.95);
-  border: 2px solid var(--info-color);
-  border-radius: 12px;
-  padding: 10px 20px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 30px;
-  min-width: 250px;
-  box-shadow: 0 0 15px rgba(56, 189, 248, 0.15), inset 0 0 10px rgba(56, 189, 248, 0.05);
+.shared-banner { 
+  background: rgba(13, 37, 56, 0.95); border: 2px solid var(--info-color); 
+  border-radius: 12px; padding: 10px 20px; display: inline-flex; 
+  align-items: center; justify-content: space-between; gap: 30px; 
+  min-width: 250px; box-shadow: 0 0 15px rgba(56, 189, 248, 0.15), inset 0 0 10px rgba(56, 189, 248, 0.05); 
 }
-
 .shared-text-group { display: flex; flex-direction: column; gap: 2px; }
 .shared-label { font-size: 10px; font-weight: 600; text-transform: uppercase; color: #60a5fa; letter-spacing: 1px; }
 .shared-title { font-size: 20px; font-weight: 900; color: #ffffff; text-transform: uppercase; text-shadow: 0 0 8px rgba(56, 189, 248, 0.6); }
-.btn-exit {
-  background: transparent; border: 1px solid var(--info-color); color: var(--info-color);
-  padding: 6px 16px; font-size: 12px; font-weight: bold; border-radius: 6px; cursor: pointer; text-transform: uppercase; transition: all 0.2s;
+.btn-exit { 
+  background: transparent; border: 1px solid var(--info-color); color: var(--info-color); 
+  padding: 6px 16px; font-size: 12px; font-weight: bold; border-radius: 6px; 
+  cursor: pointer; text-transform: uppercase; transition: all 0.2s; 
 }
 .btn-exit:hover { background: rgba(56, 189, 248, 0.2); box-shadow: 0 0 8px rgba(56, 189, 248, 0.4); }
 
-/* --- STATS --- */
-.collection-stats {
-  background: rgba(255,255,255,0.05); padding: 8px 16px;
-  border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);
-  font-family: monospace; 
-  position: absolute; left: 50%; transform: translateX(-50%); top: 24px;
+/* =========================================
+   MODALS & STATS
+   ========================================= */
+.modal-overlay { 
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+  background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(4px); 
+  z-index: 100; display: flex; align-items: center; justify-content: center; 
+}
+.modal-box { 
+  background: #0d1a2f; border: 2px solid var(--danger); border-radius: 12px; 
+  padding: 24px; max-width: 420px; text-align: center; box-shadow: 0 0 30px rgba(255, 68, 68, 0.2); 
+}
+.modal-title { color: var(--danger); font-size: 20px; font-weight: 900; margin-bottom: 12px; text-transform: uppercase; }
+.modal-text { color: #e6f0f6; font-size: 14px; line-height: 1.6; margin-bottom: 24px; }
+.modal-actions { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+.btn-danger { 
+  background: var(--danger-soft); color: #fff; border: 1px solid var(--danger); 
+  padding: 10px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.2s; 
+}
+.btn-danger:hover { background: var(--danger); box-shadow: 0 0 15px var(--danger); }
+
+.collection-stats { 
+  background: rgba(255,255,255,0.05); padding: 8px 16px; border-radius: 8px; 
+  border: 1px solid rgba(255,255,255,0.1); font-family: monospace; 
+  position: absolute; left: 50%; transform: translateX(-50%); top: 24px; 
 }
 .collection-stats b { color: var(--accent); }
 @media (max-width: 850px) { .collection-stats { position: static; transform: none; margin: 10px 0; } }
 
-/* TOOLS */
+/* =========================================
+   TOOLBAR & BUTTONS
+   ========================================= */
 .toolbar-actions { display: flex; gap: 6px; align-items: center; margin-left: auto; }
-
-/* --- BOUTONS --- */
-.btn {
-  padding: 8px 12px; border-radius: 6px; 
-  border: 1px solid rgba(255,255,255,.10);
-  background-color: var(--accent-muted); 
-  color: #e6f0f6; 
-  cursor: pointer; transition: all 0.15s; 
-  font-size: 12px; font-weight: 500; user-select: none;
+.btn { 
+  padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(255,255,255,.10); 
+  background-color: var(--accent-muted); color: #e6f0f6; cursor: pointer; 
+  transition: all 0.15s; font-size: 12px; font-weight: 500; user-select: none; 
 }
 .btn:hover { background-color: rgba(255,255,255,0.15); }
 .btn.active { background-color: var(--accent); color: #071827; border-color: var(--accent); font-weight: 700; }
 
-/* Share Link */
 #btn-share-link { background-color: var(--accent-muted); color: #e6f0f6; font-weight: 600; }
-#btn-share-link.copied { 
-  background-color: var(--accent) !important; 
-  color: #071021 !important;
-  border-color: var(--accent) !important;
-  box-shadow: 0 0 15px var(--accent);
-}
+#btn-share-link.copied { background-color: var(--accent) !important; color: #071021 !important; border-color: var(--accent) !important; box-shadow: 0 0 15px var(--accent); }
 
-/* Inputs */
 .toolbar-line { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; justify-content: center; margin-top: 10px; }
 .input { padding: 8px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.2); color: inherit; min-width: 250px; }
-
-/* Sort Select */
-.sort-select {
-  padding: 8px 12px; padding-right: 30px; border-radius: 6px; 
-  background-color: var(--accent-muted); color: #e6f0f6; 
-  border: 1px solid rgba(255,255,255,0.10); 
-  cursor: pointer; font-size: 12px; font-weight: 500; outline: none;
-  appearance: none; -webkit-appearance: none;
-  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23e6f0f6%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
-  background-repeat: no-repeat; background-position: right 10px center; background-size: 10px;
+.sort-select { 
+  padding: 8px 12px; padding-right: 30px; border-radius: 6px; background-color: var(--accent-muted); 
+  color: #e6f0f6; border: 1px solid rgba(255,255,255,0.10); cursor: pointer; font-size: 12px; 
+  font-weight: 500; outline: none; appearance: none; -webkit-appearance: none; 
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23e6f0f6%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); 
+  background-repeat: no-repeat; background-position: right 10px center; background-size: 10px; 
 }
 .sort-select option { background-color: #071021; color: #e6f0f6; padding: 8px; }
 
-/* --- FILTERS --- */
-.filter-controls { 
-  border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); 
-  padding: 10px 0; margin-top: 12px; display: flex; flex-direction: column; gap: 8px; 
-}
-
+/* =========================================
+   FILTERS
+   ========================================= */
+.filter-controls { border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); padding: 10px 0; margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
 .filter-group { display: flex; align-items: flex-start; gap: 8px; }
-.filter-group-label { 
-  font-size: 12px; color: var(--muted); width: 80px; text-align: right; 
-  padding-top: 6px; flex-shrink: 0;
-}
+.filter-group-label { font-size: 12px; color: var(--muted); width: 80px; text-align: right; padding-top: 6px; flex-shrink: 0; }
 .filter-list { display: flex; flex-wrap: wrap; gap: 4px; flex-grow: 1; }
-
-/* SPLIT BUTTONS (Standard) */
-.filter-btn-wrapper { 
-  display: inline-flex; border-radius: 4px; overflow: hidden; 
-  border: 1px solid rgba(255,255,255,.15); background: var(--accent-muted); 
-  height: 26px; 
-}
-.btn-main {
-  padding: 0 10px; border: none; background: transparent; color: #e6f0f6; cursor: pointer; font-size: 12px; 
-  border-right: 1px solid rgba(0,0,0,0.2); display: flex; align-items: center;
-}
+.filter-btn-wrapper { display: inline-flex; border-radius: 4px; overflow: hidden; border: 1px solid rgba(255,255,255,.15); background: var(--accent-muted); height: 26px; }
+.btn-main { padding: 0 10px; border: none; background: transparent; color: #e6f0f6; cursor: pointer; font-size: 12px; border-right: 1px solid rgba(0,0,0,0.2); display: flex; align-items: center; }
 .btn-main:hover { background: rgba(255,255,255,0.1); }
 .btn-main.active { background: var(--accent); color: #071827; font-weight: 700; }
 
-/* NOUVELLES COULEURS POUR LES BOUTONS RARETÉ */
-.btn-main[data-val="Black"].active { 
-    background: #334155; /* Onyx / Dark Grey */
-    color: #fff; 
-    border-color: #64748b;
-    box-shadow: 0 0 10px rgba(0,0,0,0.5); 
-}
-.btn-main[data-val="Platinum"].active { 
-    background: #cbd5e1; /* Silver / Metallic */
-    color: #0f172a; 
-    box-shadow: 0 0 10px rgba(203, 213, 225, 0.4); 
-}
-.btn-main[data-val="Gold"].active { 
-    background: #ca8a04; /* Deep Gold */
-    color: #fff; 
-    box-shadow: 0 0 10px rgba(234, 179, 8, 0.4); 
-}
+.btn-main[data-val="Black"].active { background: #334155; color: #fff; border-color: #64748b; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
+.btn-main[data-val="Platinum"].active { background: #cbd5e1; color: #0f172a; box-shadow: 0 0 10px rgba(203, 213, 225, 0.4); }
+.btn-main[data-val="Gold"].active { background: #ca8a04; color: #fff; box-shadow: 0 0 10px rgba(234, 179, 8, 0.4); }
+.btn-main[data-val="Prince"].active { background: #581c87; color: #fff; box-shadow: 0 0 10px rgba(168, 85, 247, 0.6); border-color:#a855f7; }
 
-.btn-minus { 
-  padding: 0 8px; border: none; background: rgba(0,0,0,0.2); color: #e6f0f6; cursor: pointer; font-size: 12px; font-weight: bold; 
-  display: flex; align-items: center;
-}
+.btn-minus { padding: 0 8px; border: none; background: rgba(0,0,0,0.2); color: #e6f0f6; cursor: pointer; font-size: 12px; font-weight: bold; display: flex; align-items: center; }
 .btn-minus:hover { background: rgba(255,0,0,0.3); }
 .btn-minus.exclude { background: var(--danger-soft); color: #fff; }
 
-/* Dropdowns */
 .dropdown-wrapper { position: relative; display: inline-block; }
-.dropdown-panel {
-  position: absolute; top: 100%; left: 0; 
-  background: #0d1a2f; border: 1px solid rgba(255,255,255,.1);
-  padding: 8px; border-radius: 6px; display: none; flex-direction: column; gap: 4px;
-  z-index: 50; min-width: 180px; margin-top: 4px; box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+.dropdown-panel { 
+  position: absolute; top: 100%; left: 0; background: #0d1a2f; border: 1px solid rgba(255,255,255,.1); 
+  padding: 8px; border-radius: 6px; display: none; flex-direction: column; gap: 4px; 
+  z-index: 50; min-width: 180px; margin-top: 4px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); 
 }
 .dropdown-panel:not(.hidden) { display: flex; }
 .dropdown-panel .filter-btn-wrapper { width: 100%; }
 .dropdown-panel .btn-main { flex-grow: 1; }
 
-/* --- GRID & CARDS --- */
+/* =========================================
+   GRID & CARDS
+   ========================================= */
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; margin-top: 16px; }
 
-/* SECTION HEADER */
-.section-header {
-  grid-column: 1 / -1; 
-  margin-top: 16px; margin-bottom: 4px; padding: 6px 12px;
-  border-radius: 4px; font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
-  border-left: 4px solid; display: flex; align-items: center;
+.section-header { 
+  grid-column: 1 / -1; margin-top: 16px; margin-bottom: 4px; padding: 6px 12px; 
+  border-radius: 4px; font-size: 14px; font-weight: 800; text-transform: uppercase; 
+  letter-spacing: 1px; border-left: 4px solid; display: flex; align-items: center; 
 }
+.section-header[data-rarity="Prince"] { background: var(--header-prince-bg); color: var(--header-prince-text); border-color: #a855f7; }
 .section-header[data-rarity="Black"] { background: var(--header-black-bg); color: var(--header-black-text); border-color: #fff; }
 .section-header[data-rarity="Platinum"] { background: var(--header-plat-bg); color: var(--header-plat-text); border-color: #93c5fd; }
 .section-header[data-rarity="Gold"] { background: var(--header-gold-bg); color: var(--header-gold-text); border-color: #fde047; }
 
-.card {
-  padding: 6px; border-radius: 8px; background: var(--card-bg); border: 1px solid rgba(255,255,255,.03);
-  text-align: center; cursor: pointer; position: relative; min-height: 120px;
-  transition: transform 0.1s ease-out, background 0.1s; display: flex; flex-direction: column; align-items: center;
-  content-visibility: auto; contain-intrinsic-size: 110px 140px;
-  content-visibility: auto; 
-  contain-intrinsic-size: 110px 140px; 
+.card { 
+  padding: 6px; border-radius: 8px; background: var(--card-bg); border: 1px solid rgba(255,255,255,.03); 
+  text-align: center; cursor: pointer; position: relative; min-height: 120px; 
+  transition: transform 0.1s ease-out, background 0.1s; display: flex; flex-direction: column; 
+  align-items: center; content-visibility: auto; contain-intrinsic-size: 110px 140px; 
 }
 .card:hover { background: rgba(255,255,255,0.08); transform: translateY(-2px); }
 .card.owned { outline: 2px solid var(--accent); background: rgba(44, 72, 55, 0.4); }
 
+.card[data-rarity="Prince"] { border-bottom: 2px solid rgba(168, 85, 247, 0.4); }
 .card[data-rarity="Black"] { border-bottom: 2px solid rgba(255,255,255,0.3); }
 .card[data-rarity="Platinum"] { border-bottom: 2px solid rgba(176, 224, 255, 0.3); }
 .card[data-rarity="Gold"] { border-bottom: 2px solid rgba(253, 224, 71, 0.3); }
 
-.card img {
+.card img { 
   width: 90px; height: 90px; border-radius: 8px; margin-top: 2px; 
-  background: rgba(0,0,0,0.2); display: block;
-  object-fit: contain; object-position: center;
-  transition: opacity 0.3s;
+  background: rgba(0,0,0,0.2); display: block; object-fit: contain; 
+  object-position: center; transition: opacity 0.3s; 
 }
 body.img-full .card img { width: 100%; height: 120px; background: transparent; }
 
-.card .no-img { width: 90px; height: 90px; margin-top: 2px; border-radius: 8px; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; font-size: 20px; color: rgba(255,255,255,0.2); }
+.card .no-img { 
+  width: 90px; height: 90px; margin-top: 2px; border-radius: 8px; 
+  background: rgba(255,255,255,0.05); display: flex; align-items: center; 
+  justify-content: center; font-size: 20px; color: rgba(255,255,255,0.2); 
+}
 .card .title { font-size: 10px; margin-top: 4px; line-height: 1.2; font-weight: 500; overflow-wrap: break-word; width: 100%; }
+.card .jp-title { font-size: 8px; color: var(--muted); margin-top: 2px; line-height: 1.1; font-weight: 400; overflow-wrap: break-word; width: 100%; }
 
-.check-indicator {
-  position: absolute; top: 4px; right: 4px; width: 16px; height: 16px;
-  border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; background: rgba(0,0,0,0.4); z-index: 2; pointer-events: none;
+.check-indicator { 
+  position: absolute; top: 4px; right: 4px; width: 16px; height: 16px; 
+  border: 2px solid rgba(255,255,255,0.3); border-radius: 50%; background: rgba(0,0,0,0.4); 
+  z-index: 2; pointer-events: none; 
 }
 .card.owned .check-indicator { background: var(--accent); border-color: var(--accent); }
-.card.owned .check-indicator::after { content: '✔'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10px; color: #071827; font-weight: 900; }
+.card.owned .check-indicator::after { 
+  content: '✔'; position: absolute; top: 50%; left: 50%; 
+  transform: translate(-50%, -50%); font-size: 10px; color: #071827; font-weight: 900; 
+}
 
 .tags { display: flex; flex-wrap: wrap; gap: 2px; justify-content: center; margin-top: 4px; }
 .tag { font-size: 9px; padding: 1px 3px; border-radius: 3px; background: rgba(255,255,255,0.06); color: var(--muted); white-space: nowrap; }
@@ -239,13 +214,16 @@ body.img-full .card img { width: 100%; height: 120px; background: transparent; }
   
   <div class="header">
     <div class="title-group">
-      <h1 class="h1">Aigis — Collection Tracker (All Rarities)</h1>
+      <h1 class="h1">Aigis — Collection Tracker</h1>
       <div id="shared-banner" class="shared-banner hidden">
         <div class="shared-text-group">
           <span class="shared-label">Shared Collection</span>
           <span class="shared-title">VIEW MODE</span>
         </div>
-        <button id="btn-exit-share" class="btn-exit">EXIT</button>
+        <div style="display:flex; gap:10px; align-items:center;">
+          <button id="btn-copy-share" class="btn-exit" style="color:var(--accent); border-color:var(--accent);">COPY SAVE</button>
+          <button id="btn-exit-share" class="btn-exit">EXIT</button>
+        </div>
       </div>
     </div>
     
@@ -259,9 +237,7 @@ body.img-full .card img { width: 100%; height: 120px; background: transparent; }
         <button id="btn-options" class="btn">Options ▾</button>
         <div id="options-panel" class="dropdown-panel hidden" style="right:0;left:auto;min-width:160px;">
           <button id="btn-toggle-imgmode" class="btn">Img: Icon</button>
-          <!-- NOUVEAU BOUTON AW -->
           <button id="btn-toggle-aw" class="btn">Icon: Normal</button>
-          
           <button id="btn-toggle-name" class="btn active">Show Name</button>
           <button id="btn-toggle-tags" class="btn">Show Tags</button>
           <button id="btn-toggle-fodder" class="btn">Show Fodder</button>
@@ -272,7 +248,7 @@ body.img-full .card img { width: 100%; height: 120px; background: transparent; }
   </div>
 
   <div class="toolbar-line">
-    <input id="search" class="input" placeholder="Search name..." />
+    <input id="search" class="input" placeholder="Search name (EN/JP)..." />
     <select id="sort-select" class="sort-select">
       <option value="name">Sort: Name (A-Z)</option>
       <option value="release">Sort: Release (Newest)</option>
@@ -286,33 +262,67 @@ body.img-full .card img { width: 100%; height: 120px; background: transparent; }
   <div id="grid" class="grid" aria-live="polite"></div>
 </div>
 
+<!-- OVERWRITE MODAL -->
+<div id="overwrite-modal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <div class="modal-title">⚠️ Warning</div>
+    <div class="modal-text">
+      You are going to overwrite your local save with the View Mode save.<br>
+      <strong>This action cannot be undone.</strong> Are you sure?
+    </div>
+    <div class="modal-actions">
+      <button id="btn-modal-yes" class="btn-danger">Yes, I'm sure</button>
+      <button id="btn-modal-no" class="btn" style="padding:10px 18px; font-weight:bold;">No, keep my save</button>
+    </div>
+  </div>
+</div>
 
 <script>
-const API='https://aigis.fandom.com/api.php';
-const LOCAL_OWNED_KEY='aigis-owned-v6';
-// CHANGEMENT CLÉ CACHE V2 POUR NOUVELLE STRUCTURE IMAGES
-const LOCAL_DATA_KEY='aigis-units-cache-gzip-v2'; 
+// =========================================
+// GLOBAL CONFIGURATION & STATE
+// =========================================
+const API = 'https://aigis.fandom.com/api.php';
+const LOCAL_OWNED_KEY = 'aigis-owned-v6';
+const LOCAL_DATA_KEY = 'aigis-units-cache-gzip-v3';
 
-let units=[];
-let unitMap=new Map();
-let owned=new Set();
-let isSharedMode = false;
-let showMode='all'; 
-let currentSort = 'name';
-
+let units = [];               // Array holding all fetched unit objects
+let unitMap = new Map();      // Map for O(1) lookups by unit ID
+let owned = new Set();        // Set containing the IDs of owned units
+let isSharedMode = false;     // True if viewing someone else's collection via URL
+let showMode = 'all';         // 'all' | 'owned' | 'notowned'
+let currentSort = 'name';     // 'name' | 'release'
 let showTags = false; 
-let showFodder = false;
+let showFodder = false; 
 let showName = true;
-let isImgFull = false; 
-let showAW = false; // Par défaut : Normal
-let openDropdownPanel = null;
+let isImgFull = false;        // Toggle between standard icons and full renders
+let showAW = false;           // Toggle between Normal and Awakened (AW) icons
+let openDropdownPanel = null; // Tracks currently open UI dropdowns
 
-const LABEL_MAP = { "Angels Race": "Angels", "Hermits Race": "Hermits", "Deep Sea Units": "Deep Sea", "Makai Units": "Makai", "Male Units": "Male", "Female Units": "Female", "Koihime Units": "Koihime", "Elves": "Elf", "Desert Country": "Desert", "Flower Country": "Flower", "Eastern Country": "Eastern", "New Year's Units": "New Year", "Valentine's Day Units": "Valentine", "Hot Springs Units": "Hot Springs", "Easter Hunts": "Easter", "School Units": "School", "June Bride Units": "Bride", "Summer Units": "Summer", "Halloween Units": "Halloween", "Christmas Units": "Christmas", "Kingdom of Pars": "Pars", "Seven Deadly Sins": "7 Deadly Sins", "Hero Units": "Hero", "Player Units": "Player" };
-function cleanLabel(raw) { return LABEL_MAP[raw] || raw.replace(/ Units$/i, '').replace(/ Country$/i, ''); }
+// Mapping Wiki category labels to cleaner UI labels
+const LABEL_MAP = { 
+    "Angels Race": "Angels", "Hermits Race": "Hermits", "Deep Sea Units": "Deep Sea", 
+    "Makai Units": "Makai", "Male Units": "Male", "Female Units": "Female", 
+    "Koihime Units": "Koihime", "Elves": "Elf", "Desert Country": "Desert", 
+    "Flower Country": "Flower", "Eastern Country": "Eastern", "New Year's Units": "New Year", 
+    "Valentine's Day Units": "Valentine", "Hot Springs Units": "Hot Springs", 
+    "Easter Hunts": "Easter", "School Units": "School", "June Bride Units": "Bride", 
+    "Summer Units": "Summer", "Halloween Units": "Halloween", "Christmas Units": "Christmas", 
+    "Kingdom of Pars": "Pars", "Seven Deadly Sins": "7 Deadly Sins", "Hero Units": "Hero", "Player Units": "Player" 
+};
 
-const filterStates = { rarity: new Map(), ranges: new Map(), roles: new Map(), genders: new Map(), kingdoms: new Map(), races: new Map(), archetypes: new Map(), seasonal: new Map(), crossover: new Map() };
+function cleanLabel(raw) { 
+    return LABEL_MAP[raw] || raw.replace(/ Units$/i, '').replace(/ Country$/i, ''); 
+}
 
-const FIXED_RARITY = ["Black", "Platinum", "Gold"];
+// Holds the inclusion/exclusion state of each filter. 
+// Values: 1 = Include (must have), -1 = Exclude (must not have), Undefined = Ignored
+const filterStates = { 
+    rarity: new Map(), ranges: new Map(), roles: new Map(), genders: new Map(), 
+    kingdoms: new Map(), races: new Map(), archetypes: new Map(), seasonal: new Map(), crossover: new Map() 
+};
+
+// Hardcoded categories derived from the Wiki structure
+const FIXED_RARITY = ["Prince", "Black", "Platinum", "Gold"]; 
 const FIXED_KINGDOMS=["Deep Sea Units","Desert Country","Eastern Country","Flower Country","Kingdom","Makai Units","White Empire"];
 const FIXED_ARCHETYPES=["Artillery","Bowmen","Cavalry","Clergy","Dragons","Flying","Gunners","Heavy","Magicians","Nobles"];
 const FIXED_SEASONAL=["New Year's Units","Valentine's Day Units","Hot Springs Units","Easter Hunts","School Units","June Bride Units","Summer Units","Halloween Units","Christmas Units"];
@@ -323,116 +333,185 @@ const FIXED_GENDERS = ["Male Units", "Female Units"];
 const LIST_RACES=["Angels Race","Beastfolk","Birdfolk","Celestials","Dark Elves","Demons","Dragonfolk","Dwarves","Elves","Giants","Goblins","Gods","Half-Demons","Half-Elves","Half-Gods","Hermits Race","Humans","Machines","Merfolk","Nendoroids","Orcs","Spirits","Undead","Vampires","Youkai"];
 const UI_RACES = [...LIST_RACES, "Other"];
 
-const el={ search:document.getElementById('search'), grid:document.getElementById('grid'), stats:document.getElementById('search-stats'), colStats:document.getElementById('collection-stats'), loading:document.getElementById('loading'), filterControls: document.getElementById('filter-controls'), sortSelect: document.getElementById('sort-select') };
+// DOM Element References
+const el = { 
+    search: document.getElementById('search'), 
+    grid: document.getElementById('grid'), 
+    stats: document.getElementById('search-stats'), 
+    colStats: document.getElementById('collection-stats'), 
+    loading: document.getElementById('loading'), 
+    filterControls: document.getElementById('filter-controls'), 
+    sortSelect: document.getElementById('sort-select') 
+};
 
-function debounce(func, wait) {
-  let timeout;
-  return function(...args) {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func.apply(this, args), wait);
-  };
+// =========================================
+// UTILITIES
+// =========================================
+
+// Debounce function to prevent search input from firing too rapidly
+function debounce(func, wait) { 
+    let timeout; 
+    return function(...args) { 
+        clearTimeout(timeout); 
+        timeout = setTimeout(() => func.apply(this, args), wait); 
+    }; 
 }
 
-// --- GZIP COMPRESSION UTILS ---
-
-// Convert ArrayBuffer to Base64
-function bufferToBase64(buffer) {
-    let binary = '';
-    const bytes = new Uint8Array(buffer);
-    const len = bytes.byteLength;
-    for (let i = 0; i < len; i++) binary += String.fromCharCode(bytes[i]);
-    return window.btoa(binary);
+function bufferToBase64(buffer) { 
+    let binary = ''; 
+    const bytes = new Uint8Array(buffer); 
+    const len = bytes.byteLength; 
+    for (let i = 0; i < len; i++) binary += String.fromCharCode(bytes[i]); 
+    return window.btoa(binary); 
 }
 
-// Convert Base64 to ArrayBuffer
-function base64ToBuffer(base64) {
-    const binary_string = window.atob(base64);
-    const len = binary_string.length;
-    const bytes = new Uint8Array(len);
-    for (let i = 0; i < len; i++) bytes[i] = binary_string.charCodeAt(i);
-    return bytes.buffer;
+function base64ToBuffer(base64) { 
+    const binary_string = window.atob(base64); 
+    const len = binary_string.length; 
+    const bytes = new Uint8Array(len); 
+    for (let i = 0; i < len; i++) bytes[i] = binary_string.charCodeAt(i); 
+    return bytes.buffer; 
 }
 
-// Compress Object -> Gzip -> Base64 String (For LocalStorage)
-async function compressToB64(data) {
-    const jsonStr = JSON.stringify(data);
-    const stream = new Blob([jsonStr]).stream().pipeThrough(new CompressionStream("gzip"));
-    const buffer = await new Response(stream).arrayBuffer();
-    return bufferToBase64(buffer);
+// =========================================
+// COMPRESSION & STORAGE (GZIP & BITMASKS)
+// =========================================
+
+async function compressToB64(data) { 
+    const jsonStr = JSON.stringify(data); 
+    const stream = new Blob([jsonStr]).stream().pipeThrough(new CompressionStream("gzip")); 
+    const buffer = await new Response(stream).arrayBuffer(); 
+    return bufferToBase64(buffer); 
 }
 
-// Decompress Base64 String -> Gzip -> Object (For LocalStorage)
-async function decompressFromB64(b64String) {
-    const buffer = base64ToBuffer(b64String);
-    const stream = new Blob([buffer]).stream().pipeThrough(new DecompressionStream("gzip"));
-    return await new Response(stream).json();
+async function decompressFromB64(b64String) { 
+    const buffer = base64ToBuffer(b64String); 
+    const stream = new Blob([buffer]).stream().pipeThrough(new DecompressionStream("gzip")); 
+    return await new Response(stream).json(); 
 }
 
-// Compress Object -> Blob (For File Export)
-async function compressToBlob(data) {
-    const jsonStr = JSON.stringify(data);
-    const stream = new Blob([jsonStr]).stream().pipeThrough(new CompressionStream("gzip"));
-    return await new Response(stream).blob();
+async function compressToBlob(data) { 
+    const jsonStr = JSON.stringify(data); 
+    const stream = new Blob([jsonStr]).stream().pipeThrough(new CompressionStream("gzip")); 
+    return await new Response(stream).blob(); 
 }
 
-// Decompress ArrayBuffer/Blob -> Object (For File Import)
-async function decompressFromBuffer(buffer) {
-    try {
-        const stream = new Blob([buffer]).stream().pipeThrough(new DecompressionStream("gzip"));
-        return await new Response(stream).json();
-    } catch (e) {
-        // Fallback: maybe it's a legacy JSON file (not compressed)
-        const text = new TextDecoder().decode(buffer);
-        return JSON.parse(text);
-    }
+async function decompressFromBuffer(buffer) { 
+    try { 
+        const stream = new Blob([buffer]).stream().pipeThrough(new DecompressionStream("gzip")); 
+        return await new Response(stream).json(); 
+    } catch (e) { 
+        // Fallback for older uncompressed formats
+        const text = new TextDecoder().decode(buffer); 
+        return JSON.parse(text); 
+    } 
 }
 
-// --- LEGACY URL COMPRESSION (KEEPING FOR SHARE LINKS) ---
-async function compressData(ownedSet) { const refUnits = [...units].sort((a,b) => a.numericId - b.numericId); const numBytes = Math.ceil(refUnits.length / 8); const buffer = new Uint8Array(numBytes); refUnits.forEach((u, index) => { if (ownedSet.has(u.id)) buffer[Math.floor(index/8)] |= (1 << (index%8)); }); const stream = new Blob([buffer]).stream().pipeThrough(new CompressionStream("gzip")); const response = await new Response(compressed = stream); let base64 = btoa(String.fromCharCode(...new Uint8Array(await response.arrayBuffer()))); return 'v2-' + base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
-async function decompressData(encodedString) { let base64 = encodedString.startsWith('v2-') ? encodedString.substring(3) : encodedString; let str = base64.replace(/-/g, '+').replace(/_/g, '/'); while (str.length % 4) str += '='; const stream = new Blob([Uint8Array.from(atob(str), c => c.charCodeAt(0))]).stream().pipeThrough(new DecompressionStream("gzip")); const response = await new Response(stream); const bitmap = new Uint8Array(await response.arrayBuffer()); const result = new Set(); const refUnits = [...units].sort((a,b) => a.numericId - b.numericId); refUnits.forEach((u, index) => { if (Math.floor(index/8) < bitmap.length && (bitmap[Math.floor(index/8)] & (1 << (index%8)))) result.add(u.id); }); return result; }
+/**
+ * Encodes the `owned` Set into a highly compressed Base64 string for URL sharing.
+ * Uses a bitmask approach: the array is sorted, and each unit represents 1 bit.
+ * E.g., if you own unit index 0 and 2, the byte is 00000101 (5).
+ */
+async function compressData(ownedSet) { 
+    const refUnits = [...units].sort((a,b) => a.numericId - b.numericId); 
+    const numBytes = Math.ceil(refUnits.length / 8); 
+    const buffer = new Uint8Array(numBytes); 
+    
+    refUnits.forEach((u, index) => { 
+        if (ownedSet.has(u.id)) {
+            buffer[Math.floor(index/8)] |= (1 << (index%8)); 
+        }
+    }); 
+    
+    // Gzip the binary buffer
+    const stream = new Blob([buffer]).stream().pipeThrough(new CompressionStream("gzip")); 
+    const response = await new Response(stream); 
+    let base64 = btoa(String.fromCharCode(...new Uint8Array(await response.arrayBuffer()))); 
+    
+    // Make URL-safe and prepend version marker
+    return 'v2-' + base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); 
+}
 
-// --- CACHE & DATA MANAGEMENT ---
+/**
+ * Decodes a shared base64 string back into a Set of owned IDs using the reverse of compressData.
+ */
+async function decompressData(encodedString) { 
+    let base64 = encodedString.startsWith('v2-') ? encodedString.substring(3) : encodedString; 
+    let str = base64.replace(/-/g, '+').replace(/_/g, '/'); 
+    while (str.length % 4) str += '='; 
+    
+    const stream = new Blob([Uint8Array.from(atob(str), c => c.charCodeAt(0))]).stream().pipeThrough(new DecompressionStream("gzip")); 
+    const response = await new Response(stream); 
+    const bitmap = new Uint8Array(await response.arrayBuffer()); 
+    const result = new Set(); 
+    
+    const refUnits = [...units].sort((a,b) => a.numericId - b.numericId); 
+    refUnits.forEach((u, index) => { 
+        if (Math.floor(index/8) < bitmap.length && (bitmap[Math.floor(index/8)] & (1 << (index%8)))) {
+            result.add(u.id); 
+        }
+    }); 
+    return result; 
+}
 
+// Caches the heavy API response locally to prevent spamming the Fandom Wiki on reload
 async function saveUnitsToCache(data) { 
   const cleanData = data.map(u => { const { categories, ...rest } = u; return rest; });
   try { 
-      // NEW: Compress before saving
-      const compressed = await compressToB64({ timestamp: Date.now(), units: cleanData });
+      const compressed = await compressToB64({ timestamp: Date.now(), units: cleanData }); 
       localStorage.setItem(LOCAL_DATA_KEY, compressed); 
   } catch(e) { console.warn("Cache save failed", e); } 
 }
 
-function saveOwned(){ if (!isSharedMode) localStorage.setItem(LOCAL_OWNED_KEY,JSON.stringify([...owned])); }
+function saveOwned(){ 
+    if (!isSharedMode) localStorage.setItem(LOCAL_OWNED_KEY,JSON.stringify([...owned])); 
+}
 
+// =========================================
+// DATA PROCESSING & FILTERING
+// =========================================
+
+// Recalculates ownership percentages based on current context (ignores fodder/unselected rarities)
 function updateStats(){
   if(!units.length) return;
   const totalCol = units.filter(u => (!showFodder && u.isFodder) ? false : true).length;
   const ownedCol = units.filter(u => ((!showFodder && u.isFodder) ? false : true) && owned.has(u.id)).length;
   
-  let contextTotal = totalCol;
+  let contextTotal = totalCol; 
   let contextOwned = ownedCol;
-
   const activeRarities = [];
+  
+  if (filterStates.rarity.get('Prince') === 1) activeRarities.push('Prince');
   if (filterStates.rarity.get('Black') === 1) activeRarities.push('Black');
   if (filterStates.rarity.get('Platinum') === 1) activeRarities.push('Platinum');
   if (filterStates.rarity.get('Gold') === 1) activeRarities.push('Gold');
 
+  // If viewing exactly one rarity, adjust the stats ratio to show only that rarity
   if(activeRarities.length === 1) {
       const r = activeRarities[0];
       contextTotal = units.filter(u => u.rarity === r && (!showFodder && u.isFodder ? false : true)).length;
       contextOwned = units.filter(u => u.rarity === r && owned.has(u.id) && (!showFodder && u.isFodder ? false : true)).length;
   }
-
   const percent = contextTotal > 0 ? ((contextOwned / contextTotal) * 100).toFixed(1) : 0;
   el.colStats.innerHTML = `Collection${isSharedMode?" (View)":""}: <b>${percent}%</b> <span style="opacity:0.7">(${contextOwned}/${contextTotal})</span>`;
 }
 
-function normalize(s){return String(s||'').replace(/^Category:/i,'').replace(/_/g,' ').trim();}
-function nk(s){return String(s||'').toLowerCase().trim();}
-function buildApiTags(catList){return (catList||[]).map(c=>normalize(c.title||c));}
-function determineRange(tags){ const t = (tags||[]).map(x => nk(x)); if(t.some(x => x.includes('omni'))) return 'Omni'; if(t.some(x => x.includes('rearguard'))) return 'Ranged'; return 'Melee'; }
+function normalize(s){ return String(s||'').replace(/^Category:/i,'').replace(/_/g,' ').trim(); }
+function nk(s){ return String(s||'').toLowerCase().trim(); }
+function buildApiTags(catList){ return (catList||[]).map(c=>normalize(c.title||c)); }
 
+// Derives a unit's attack range based on their wiki tags
+function determineRange(tags){ 
+    const t = (tags||[]).map(x => nk(x)); 
+    if(t.some(x => x.includes('omni'))) return 'Omni'; 
+    if(t.some(x => x.includes('rearguard'))) return 'Ranged'; 
+    return 'Melee'; 
+}
+
+// Formats raw API data into our local unit object structure
 function processUnitData(u) {
+    if(u.rarity === 'Prince') return u; // Special case, pre-processed manually
+    
     const apiTags = buildApiTags(u.apiTags||u.categories||[]);
     let races = apiTags.filter(t => LIST_RACES.includes(t));
     if (races.length === 0) races = ["Other"];
@@ -447,11 +526,10 @@ function processUnitData(u) {
     return { 
         id: String(pid), numericId: pid, 
         title: normalize(u.title || u.pageTitle || u.name), 
-        // PASSE-PLAT POUR LES IMAGES
+        jpName: u.jpName || '',
         imgIconNormal: u.imgIconNormal, imgIconAW: u.imgIconAW, imgFull: u.imgFull, 
         apiTags: apiTags, tags: u.tags || [], 
-        rarity: r, 
-        range: determineRange(apiTags), 
+        rarity: r, range: determineRange(apiTags), 
         genders: apiTags.filter(t => FIXED_GENDERS.includes(t)), 
         roles: apiTags.filter(t => FIXED_ROLES.includes(t)), 
         kingdoms: apiTags.filter(t => FIXED_KINGDOMS.includes(t)), 
@@ -463,21 +541,30 @@ function processUnitData(u) {
     };
 }
 
+// Core filtering logic engine. Returns true if unit satisfies ALL current active filters
 function matchesFilters(u, searchQuery = null){ 
   if (!showFodder && u.isFodder) return false; 
-  if (searchQuery && !nk(u.title).includes(searchQuery)) return false; 
+  if (searchQuery && !nk(u.title).includes(searchQuery) && !nk(u.jpName).includes(searchQuery)) return false; 
   if(showMode==='owned' && !owned.has(u.id)) return false; 
   if(showMode==='notowned' && owned.has(u.id)) return false; 
 
+  // Rarity check (OR logic across selected rarities)
   if (filterStates.rarity.size > 0) {
       const state = filterStates.rarity.get(u.rarity);
       const hasInclude = [...filterStates.rarity.values()].some(v => v === 1);
-      
       if (state === -1) return false; 
       if (hasInclude && state !== 1) return false; 
   } 
 
-  if (filterStates.ranges.size > 0) { const state = filterStates.ranges.get(u.range); if (state === -1) return false; const hasGreen = [...filterStates.ranges.values()].some(v => v === 1); if (hasGreen && state !== 1) return false; } 
+  // Range check
+  if (filterStates.ranges.size > 0) { 
+      const state = filterStates.ranges.get(u.range); 
+      if (state === -1) return false; 
+      const hasGreen = [...filterStates.ranges.values()].some(v => v === 1); 
+      if (hasGreen && state !== 1) return false; 
+  } 
+  
+  // Custom tag filters
   if (!checkFilterState(u.roles, filterStates.roles)) return false; 
   if (!checkFilterState(u.genders, filterStates.genders)) return false; 
   if (!checkFilterState(u.kingdoms, filterStates.kingdoms)) return false; 
@@ -485,443 +572,795 @@ function matchesFilters(u, searchQuery = null){
   if (!checkFilterState(u.archetypes, filterStates.archetypes)) return false; 
   if (!checkFilterState(u.seasonal, filterStates.seasonal)) return false; 
   if (!checkFilterState(u.crossover, filterStates.crossover)) return false; 
+  
   return true; 
 }
 
-function checkFilterState(unitTags, filterMap) { if (filterMap.size === 0) return true; let includeRequired = false; let hasIncluded = false; for (const [tag, state] of filterMap) { const match = unitTags.some(t => nk(t) === nk(tag)) || (tag === "Other" && unitTags.includes("Other")); if (state === -1 && match) return false; if (state === 1) { includeRequired = true; if (match) hasIncluded = true; } } if (includeRequired && !hasIncluded) return false; return true; }
+// Helper evaluating multi-select filter groups (+1 Include, -1 Exclude)
+function checkFilterState(unitTags, filterMap) { 
+    if (filterMap.size === 0) return true; 
+    let includeRequired = false; 
+    let hasIncluded = false; 
+    for (const [tag, state] of filterMap) { 
+        const match = unitTags.some(t => nk(t) === nk(tag)) || (tag === "Other" && unitTags.includes("Other")); 
+        if (state === -1 && match) return false; 
+        if (state === 1) { 
+            includeRequired = true; 
+            if (match) hasIncluded = true; 
+        } 
+    } 
+    // If user selected specific things to include, unit MUST match at least one of them
+    if (includeRequired && !hasIncluded) return false; 
+    return true; 
+}
 
-// --- DOM GENERATION ---
+// =========================================
+// DOM RENDERING
+// =========================================
+
 function createHeaderDOM(rarity) {
-    const h = document.createElement('div');
+    const h = document.createElement('div'); 
     h.className = 'section-header';
-    h.dataset.type = 'header';
-    h.dataset.rarity = rarity;
+    h.dataset.type = 'header'; 
+    h.dataset.rarity = rarity; 
     h.textContent = `${rarity} Units`;
     return h;
 }
 
 function createCardDOM(u) {
-    const card=document.createElement('div'); 
-    card.className='card';
-    card.dataset.id = u.id;
+    const card = document.createElement('div'); 
+    card.className = 'card'; 
+    card.dataset.id = u.id; 
     card.dataset.rarity = u.rarity;
     
     if(owned.has(u.id)) card.classList.add('owned');
-    const checkbox = document.createElement('div'); checkbox.className = 'check-indicator'; card.appendChild(checkbox);
     
-    // --- NOUVELLE LOGIQUE DE SÉLECTION D'IMAGE ---
+    const checkbox = document.createElement('div'); 
+    checkbox.className = 'check-indicator'; 
+    card.appendChild(checkbox);
+    
+    // Choose correct image source based on global UI toggles
     let src;
     if (isImgFull) {
         src = u.imgFull || u.imgIconAW || u.imgIconNormal;
     } else {
-        if (showAW) {
-             // Si on veut AW, on priorise AW, sinon Normal
-             src = u.imgIconAW || u.imgIconNormal;
-        } else {
-             // Si on veut Normal, on priorise Normal, sinon AW (Fallback Hero Units)
-             src = u.imgIconNormal || u.imgIconAW;
-        }
+        src = showAW ? (u.imgIconAW || u.imgIconNormal) : (u.imgIconNormal || u.imgIconAW);
     }
     
     if(src) { 
-        const img=document.createElement('img'); 
-        img.src=src; img.alt=u.title; img.loading = "lazy"; img.decoding = "async";
+        const img = document.createElement('img'); 
+        img.src = src; 
+        img.alt = u.title; 
+        img.loading = "lazy"; 
+        img.decoding = "async"; 
         card.appendChild(img); 
     } else { 
-        const ph=document.createElement('div'); ph.className='no-img'; ph.textContent='?'; card.appendChild(ph); 
+        const ph = document.createElement('div'); 
+        ph.className = 'no-img'; 
+        ph.textContent = '?'; 
+        card.appendChild(ph); 
     }
     
-    if (showName) { const title=document.createElement('div'); title.className='title'; title.textContent=u.title; card.appendChild(title); }
-    const wikiLink = document.createElement('a'); wikiLink.href=`https://aigis.fandom.com/wiki/${encodeURIComponent(u.title.replace(/ /g,'_'))}`; wikiLink.target='_blank'; wikiLink.className='icon-link'; wikiLink.textContent='Wiki 🔗'; wikiLink.style.fontSize='10px'; wikiLink.style.marginTop='auto'; wikiLink.addEventListener('click', e => e.stopPropagation()); card.appendChild(wikiLink);
+    if (showName) { 
+        const title = document.createElement('div'); 
+        title.className = 'title'; 
+        title.textContent = u.title; 
+        card.appendChild(title); 
+        
+        if (u.jpName) { 
+            const jpTitle = document.createElement('div'); 
+            jpTitle.className = 'jp-title'; 
+            jpTitle.textContent = u.jpName; 
+            card.appendChild(jpTitle); 
+        }
+    }
     
+    // Construct Wiki Link (Prince is a special case redirect)
+    let wikiName = u.title.replace(/ /g,'_');
+    if(u.rarity === 'Prince' && u.title !== 'Prince') {
+        wikiName = "Prince/Divine_Beast_Titles";
+    }
+
+    const wikiLink = document.createElement('a'); 
+    wikiLink.href = `https://aigis.fandom.com/wiki/${encodeURIComponent(wikiName)}`; 
+    wikiLink.target = '_blank'; 
+    wikiLink.className = 'icon-link'; 
+    wikiLink.textContent = 'Wiki 🔗'; 
+    wikiLink.style.fontSize = '10px'; 
+    wikiLink.style.marginTop = 'auto'; 
+    wikiLink.addEventListener('click', e => e.stopPropagation()); 
+    card.appendChild(wikiLink);
+    
+    // Render sub-tags if enabled
     if(showTags){ 
-        const tagsWrap=document.createElement('div'); tagsWrap.className='tags'; 
+        const tagsWrap = document.createElement('div'); 
+        tagsWrap.className = 'tags'; 
         const ignoredTags = ["Black Units", "Male Units", "Female Units", "Platinum Units", "Sapphire Units", "Gold Units", "Chibi Units", ...FIXED_KINGDOMS]; 
         const displayTags = (u.apiTags||[]).filter(t => !ignoredTags.includes(t) && !t.includes("Rarity")); 
-        Array.from(new Set(displayTags)).slice(0,5).forEach(t=>{ const tk=document.createElement('span'); tk.className='tag'; tk.textContent=cleanLabel(t); tagsWrap.appendChild(tk); }); 
+        
+        Array.from(new Set(displayTags)).slice(0,5).forEach(t => { 
+            const tk = document.createElement('span'); 
+            tk.className = 'tag'; 
+            tk.textContent = cleanLabel(t); 
+            tagsWrap.appendChild(tk); 
+        }); 
         card.appendChild(tagsWrap); 
     }
     return card;
 }
 
-// --- RENDER LOGIC ---
-
+// Hide/Show existing DOM elements instead of full re-renders for better performance during search
 function updateView() {
-    const searchQuery = nk(el.search.value || '');
+    const searchQuery = nk(el.search.value || ''); 
     let totalCount = 0;
-    
-    const counts = { "Black": 0, "Platinum": 0, "Gold": 0 };
+    const counts = { "Prince": 0, "Black": 0, "Platinum": 0, "Gold": 0 };
     
     const children = el.grid.children;
     for(let i=0; i<children.length; i++) {
         const child = children[i];
         if(child.dataset.type === 'header') continue;
         
-        const u = unitMap.get(child.dataset.id);
+        const u = unitMap.get(child.dataset.id); 
         if(!u) continue; 
         
-        if(matchesFilters(u, searchQuery)) {
-            child.classList.remove('hidden');
-            if(counts[u.rarity] !== undefined) counts[u.rarity]++;
-            totalCount++;
-        } else {
-            child.classList.add('hidden');
+        if(matchesFilters(u, searchQuery)) { 
+            child.classList.remove('hidden'); 
+            if(counts[u.rarity] !== undefined) counts[u.rarity]++; 
+            totalCount++; 
+        } else { 
+            child.classList.add('hidden'); 
         }
     }
     
+    // Hide headers if no units in that rarity are visible
     for(let i=0; i<children.length; i++) {
         const child = children[i];
-        if(child.dataset.type === 'header') {
-            const r = child.dataset.rarity;
-            if (counts[r] > 0) child.classList.remove('hidden');
-            else child.classList.add('hidden');
+        if(child.dataset.type === 'header') { 
+            const r = child.dataset.rarity; 
+            if (counts[r] > 0) child.classList.remove('hidden'); 
+            else child.classList.add('hidden'); 
         }
     }
-
-    el.stats.textContent = `${totalCount} shown`;
+    el.stats.textContent = `${totalCount} shown`; 
     updateStats();
 }
 
+// Full DOM re-render (used on initialization, sorting, and structural view changes)
 function render(){
-  if(!units || units.length === 0) { el.grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;">No units found. Reload page.</div>'; return; }
+  if(!units || units.length === 0) { 
+      el.grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;">No units found. Reload page.</div>'; 
+      return; 
+  }
   
-  // LOGIQUE DE TRI
-  const rWeight = { "Black": 3, "Platinum": 2, "Gold": 1 };
+  // Custom weight mapping to ensure Rarity grouping order
+  const rWeight = { "Prince": 4, "Black": 3, "Platinum": 2, "Gold": 1 };
   
   const sortedUnits = [...units].sort((a,b) => {
-      const rwA = rWeight[a.rarity] || 0;
+      const rwA = rWeight[a.rarity] || 0; 
       const rwB = rWeight[b.rarity] || 0;
       if (rwA !== rwB) return rwB - rwA; 
-      if (currentSort === 'release') return b.numericId - a.numericId;
+      if (currentSort === 'release') return b.numericId - a.numericId; // Based on Wiki PageID creation
       return a.title.localeCompare(b.title);
   });
   
-  el.grid.innerHTML='';
-  const frag = document.createDocumentFragment();
-  
+  el.grid.innerHTML = ''; 
+  const frag = document.createDocumentFragment(); // Use fragments to prevent reflows
   let currentRarity = null;
   
   for(const u of sortedUnits){
       if (u.rarity !== currentRarity) {
-          if (["Black", "Platinum", "Gold"].includes(u.rarity)) {
-             frag.appendChild(createHeaderDOM(u.rarity));
+          if (["Prince", "Black", "Platinum", "Gold"].includes(u.rarity)) {
+              frag.appendChild(createHeaderDOM(u.rarity));
           }
           currentRarity = u.rarity;
       }
       frag.appendChild(createCardDOM(u));
   }
   el.grid.appendChild(frag); 
-  
   updateView(); 
 }
 
+// Toggle unit ownership state
 function handleGridClick(e) {
-    if(isSharedMode) return;
-    const card = e.target.closest('.card');
+    if(isSharedMode) return; // Prevent editing when viewing a shared link
+    const card = e.target.closest('.card'); 
     if(!card) return;
-    const id = card.dataset.id;
+    
+    const id = card.dataset.id; 
     if(!id) return;
-    if(owned.has(id)) {
-        owned.delete(id);
-        card.classList.remove('owned');
-    } else {
-        owned.add(id);
-        card.classList.add('owned');
+    
+    if(owned.has(id)) { 
+        owned.delete(id); 
+        card.classList.remove('owned'); 
+    } else { 
+        owned.add(id); 
+        card.classList.add('owned'); 
     }
-    saveOwned();
+    saveOwned(); 
     updateStats();
 }
+
+// =========================================
+// EVENT LISTENERS & INIT HOOKS
+// =========================================
 
 document.addEventListener('DOMContentLoaded', () => {
   el.grid.addEventListener('click', handleGridClick);
   el.sortSelect.addEventListener('change', (e) => { currentSort = e.target.value; render(); });
   el.search.oninput = debounce(() => updateView(), 250);
 
+  // Generates and copies the compressed Bitmask URL
   document.getElementById('btn-share-link').addEventListener('click', async (e) => {
-    if(owned.size===0) return alert('Empty');
-    const btn=e.target; const txt=btn.textContent;
-    try {
-      const encoded = await compressData(owned);
-      const url = `${window.location.href.split('?')[0]}?share=${encoded}`;
-      await navigator.clipboard.writeText(url);
-      btn.textContent = "Copied!"; btn.classList.add('copied'); 
-      setTimeout(()=> {btn.textContent=txt; btn.classList.remove('copied')}, 1500);
-    } catch(x){alert('Error');}
+    if(owned.size===0) return alert('Empty'); 
+    const btn = e.target; 
+    const txt = btn.textContent;
+    try { 
+        const encoded = await compressData(owned); 
+        const url = `${window.location.href.split('?')[0]}?share=${encoded}`; 
+        await navigator.clipboard.writeText(url); 
+        btn.textContent = "Copied!"; 
+        btn.classList.add('copied'); 
+        setTimeout(() => { btn.textContent = txt; btn.classList.remove('copied'); }, 1500); 
+    } catch(x) { alert('Error'); }
   });
 
-  // --- NEW EXPORT LOGIC (GZIP BLOB) ---
   document.getElementById('btn-export').onclick = async () => { 
-      const data = {owned:[...owned], units};
-      const blob = await compressToBlob(data); // Returns a Gzip Blob
-      const a=document.createElement('a'); 
-      a.href=URL.createObjectURL(blob); 
-      a.download='aigis-data.json.gz'; // Extension gz
+      const blob = await compressToBlob({ owned: [...owned], units });
+      const a = document.createElement('a'); 
+      a.href = URL.createObjectURL(blob); 
+      a.download = 'aigis-data.json.gz'; 
       a.click(); 
   };
-
+  
   document.getElementById('btn-import').onclick = () => document.getElementById('file-input').click();
   
-  // --- NEW IMPORT LOGIC (GZIP SUPPORT) ---
   document.getElementById('file-input').onchange = async (e) => { 
       try {
-          const file = e.target.files[0];
-          const buffer = await file.arrayBuffer();
-          // Try decompressing, fall back to JSON.parse if it fails
+          const buffer = await e.target.files[0].arrayBuffer(); 
           const d = await decompressFromBuffer(buffer);
-
-          if(d.owned) owned=new Set(d.owned); 
-          if(d.units) {
-              units=d.units; 
+          if(d.owned) owned = new Set(d.owned); 
+          if(d.units) { 
+              units = d.units; 
               units.forEach(u => unitMap.set(u.id, u)); 
-              // Don't forget to await the compressed save
-              await saveUnitsToCache(units);
+              await saveUnitsToCache(units); 
           } 
           if(!isSharedMode) saveOwned(); 
           render(); 
-      } catch(x){
-          console.error(x);
-          alert('Import failed: Invalid file format.');
+      } catch(x) { 
+          alert('Import failed: Invalid file format.'); 
       } 
   };
   
   document.getElementById('btn-exit-share').onclick = () => { window.location.href = window.location.pathname; };
 
-  const optionsBtn = document.getElementById('btn-options'); const optionsPanel = document.getElementById('options-panel');
-  const toggleTagsBtn = document.getElementById('btn-toggle-tags'); const toggleFodderBtn = document.getElementById('btn-toggle-fodder');
-  const toggleNameBtn = document.getElementById('btn-toggle-name'); const toggleImgBtn = document.getElementById('btn-toggle-imgmode');
+  // --- OVERWRITE MODAL LOGIC ---
+  const copyShareBtn = document.getElementById('btn-copy-share');
+  const overwriteModal = document.getElementById('overwrite-modal');
+  if (copyShareBtn && overwriteModal) {
+      copyShareBtn.addEventListener('click', () => overwriteModal.classList.remove('hidden'));
+      document.getElementById('btn-modal-no').addEventListener('click', () => overwriteModal.classList.add('hidden'));
+      document.getElementById('btn-modal-yes').addEventListener('click', () => {
+          localStorage.setItem(LOCAL_OWNED_KEY, JSON.stringify([...owned]));
+          const btnY = document.getElementById('btn-modal-yes');
+          btnY.textContent = "SAVED!"; 
+          btnY.style.background = "var(--accent)"; 
+          btnY.style.color = "#000"; 
+          btnY.style.borderColor = "var(--accent)";
+          setTimeout(() => { window.location.href = window.location.pathname; }, 600);
+      });
+  }
+
+  // --- DISPLAY OPTIONS DROPDOWN ---
+  const optionsBtn = document.getElementById('btn-options'); 
+  const optionsPanel = document.getElementById('options-panel');
+  const toggleTagsBtn = document.getElementById('btn-toggle-tags'); 
+  const toggleFodderBtn = document.getElementById('btn-toggle-fodder');
+  const toggleNameBtn = document.getElementById('btn-toggle-name'); 
+  const toggleImgBtn = document.getElementById('btn-toggle-imgmode');
   const toggleAWBtn = document.getElementById('btn-toggle-aw');
   
   if (optionsBtn) {
-    optionsBtn.addEventListener('click', (e) => { e.stopPropagation(); const isHidden = optionsPanel.classList.contains('hidden'); if (openDropdownPanel) closeOpenDropdown(); optionsPanel.classList.toggle('hidden', !isHidden); optionsBtn.classList.toggle('active', isHidden); });
+    optionsBtn.addEventListener('click', (e) => { 
+        e.stopPropagation(); 
+        const isHidden = optionsPanel.classList.contains('hidden'); 
+        if (openDropdownPanel) openDropdownPanel.classList.add('hidden'); 
+        optionsPanel.classList.toggle('hidden', !isHidden); 
+        optionsBtn.classList.toggle('active', isHidden); 
+    });
     toggleTagsBtn.addEventListener('click', (e) => { e.stopPropagation(); showTags = !showTags; toggleTagsBtn.classList.toggle('active', showTags); render(); });
     toggleNameBtn.addEventListener('click', (e) => { e.stopPropagation(); showName = !showName; toggleNameBtn.classList.toggle('active', showName); render(); });
     toggleFodderBtn.addEventListener('click', (e) => { e.stopPropagation(); showFodder = !showFodder; toggleFodderBtn.classList.toggle('active', showFodder); updateView(); });
     toggleImgBtn.addEventListener('click', (e) => { e.stopPropagation(); isImgFull = !isImgFull; toggleImgBtn.textContent = isImgFull ? "Img: Full" : "Img: Icon"; document.body.className = isImgFull ? 'img-full' : ''; render(); });
-    
-    // NOUVEL EVENT LISTENER AW
-    toggleAWBtn.addEventListener('click', (e) => { 
-        e.stopPropagation(); 
-        showAW = !showAW; 
-        toggleAWBtn.textContent = showAW ? "Icon: AW" : "Icon: Normal"; 
-        toggleAWBtn.classList.toggle('active', showAW);
-        if (!isImgFull) render(); 
-    });
+    toggleAWBtn.addEventListener('click', (e) => { e.stopPropagation(); showAW = !showAW; toggleAWBtn.textContent = showAW ? "Icon: AW" : "Icon: Normal"; toggleAWBtn.classList.toggle('active', showAW); if (!isImgFull) render(); });
   }
-  document.addEventListener('click', e => { if(openDropdownPanel && !openDropdownPanel.wrapper.contains(e.target)) { openDropdownPanel.classList.add('hidden'); openDropdownPanel.previousElementSibling.classList.remove('active'); openDropdownPanel=null; } if(!optionsPanel.classList.contains('hidden') && !optionsBtn.contains(e.target) && !optionsPanel.contains(e.target)) { optionsPanel.classList.add('hidden'); optionsBtn.classList.remove('active'); } });
   
-  renderStaticFilters();
+  // Close open dropdowns when clicking outside
+  document.addEventListener('click', e => { 
+      if(openDropdownPanel && !openDropdownPanel.wrapper.contains(e.target)) { 
+          openDropdownPanel.classList.add('hidden'); 
+          openDropdownPanel.previousElementSibling.classList.remove('active'); 
+          openDropdownPanel = null; 
+      } 
+      if(!optionsPanel.classList.contains('hidden') && !optionsBtn.contains(e.target) && !optionsPanel.contains(e.target)) { 
+          optionsPanel.classList.add('hidden'); 
+          optionsBtn.classList.remove('active'); 
+      } 
+  });
+  
+  renderStaticFilters(); 
   init();
 });
 
-// Créateur de bouton SIMPLE (Sans le "-")
+// =========================================
+// UI FILTER COMPONENTS GENERATION
+// =========================================
+
 function createSimpleButton(k, map) {
-  const w=document.createElement('div'); w.className='filter-btn-wrapper';
-  // On retire la bordure car pas de split
+  const w = document.createElement('div'); 
+  w.className = 'filter-btn-wrapper'; 
   w.style.borderRight = "1px solid rgba(255,255,255,.15)"; 
   
-  const b=document.createElement('button'); b.className='btn-main'; b.textContent=cleanLabel(k);
+  const b = document.createElement('button'); 
+  b.className = 'btn-main'; 
+  b.textContent = cleanLabel(k); 
   b.dataset.val = k; 
-  b.style.width = "100%"; // Prend toute la place
+  b.style.width = "100%"; 
   b.style.borderRight = "none";
   
-  b.onclick=()=>{ 
-    const v=map.get(k); 
-    if(v===1){ map.delete(k); b.classList.remove('active'); }
-    else{ map.set(k,1); b.classList.add('active'); } 
-    updateView(); 
+  if(map.get(k) === 1) b.classList.add('active'); // FIX bouton light
+  
+  b.onclick = () => { 
+      const v = map.get(k); 
+      if(v === 1) { 
+          map.delete(k); 
+          b.classList.remove('active'); 
+      } else { 
+          map.set(k, 1); 
+          b.classList.add('active'); 
+      } 
+      updateView(); 
   };
   
-  w.appendChild(b); return w;
+  w.appendChild(b); 
+  return w;
 }
 
-// Créateur de bouton SPLIT (Avec le "-")
-function createSplitButton(k,l,m) {
-  const w=document.createElement('div'); w.className='filter-btn-wrapper';
-  const b1=document.createElement('button'); b1.className='btn-main'; b1.textContent=cleanLabel(l);
+// Creates a button group with both an "Include" (left side) and "Exclude" (right side "-") action
+function createSplitButton(k, l, m) {
+  const w = document.createElement('div'); 
+  w.className = 'filter-btn-wrapper';
+  
+  const b1 = document.createElement('button'); 
+  b1.className = 'btn-main'; 
+  b1.textContent = cleanLabel(l); 
   b1.dataset.val = l; 
-  const b2=document.createElement('button'); b2.className='btn-minus'; b2.textContent='-';
-  b1.onclick=()=>{ const v=m.get(k); if(v===1){m.delete(k);b1.classList.remove('active');}else{m.set(k,1);b1.classList.add('active');b2.classList.remove('exclude');} updateView(); };
-  b2.onclick=()=>{ const v=m.get(k); if(v===-1){m.delete(k);b2.classList.remove('exclude');}else{m.set(k,-1);b2.classList.add('exclude');b1.classList.remove('active');} updateView(); };
-  w.append(b1,b2); return w;
+  
+  const b2 = document.createElement('button'); 
+  b2.className = 'btn-minus'; 
+  b2.textContent = '-';
+  
+  // Include Click
+  b1.onclick = () => { 
+      const v = m.get(k); 
+      if(v === 1) { m.delete(k); b1.classList.remove('active'); } 
+      else { m.set(k, 1); b1.classList.add('active'); b2.classList.remove('exclude'); } 
+      updateView(); 
+  };
+  
+  // Exclude Click
+  b2.onclick = () => { 
+      const v = m.get(k); 
+      if(v === -1) { m.delete(k); b2.classList.remove('exclude'); } 
+      else { m.set(k, -1); b2.classList.add('exclude'); b1.classList.remove('active'); } 
+      updateView(); 
+  };
+  
+  w.append(b1, b2); 
+  return w;
 }
 
-function createButtonGroup(l,lst,m) { 
-  const g=document.createElement('div'); g.className='filter-group'; 
-  const lb=document.createElement('div'); lb.className='filter-group-label'; lb.textContent=l+' :'; 
-  const container=document.createElement('div'); container.className='filter-list';
+function createButtonGroup(l, lst, m) { 
+  const g = document.createElement('div'); 
+  g.className = 'filter-group'; 
+  
+  const lb = document.createElement('div'); 
+  lb.className = 'filter-group-label'; 
+  lb.textContent = l + ' :'; 
+  
+  const container = document.createElement('div'); 
+  container.className = 'filter-list';
+  
   g.appendChild(lb); 
-  lst.forEach(o=>container.appendChild(createSplitButton(o,o,m))); 
-  g.appendChild(container);
+  lst.forEach(o => container.appendChild(createSplitButton(o, o, m))); 
+  g.appendChild(container); 
   el.filterControls.appendChild(g); 
 }
 
-function createDropdown(l,lst,m) {
-  const w=document.createElement('div'); w.className='dropdown-wrapper'; const b=document.createElement('button'); b.className='btn'; b.textContent=l+' ▾'; const p=document.createElement('div'); p.className='dropdown-panel hidden';
-  const h=document.createElement('div'); h.className='filter-btn-wrapper'; h.style.marginBottom='8px';
-  const all=document.createElement('button'); all.className='btn-main'; all.textContent='Select All'; all.style.textAlign='center'; all.style.color='var(--accent)';
-  all.onclick=()=>{ const on=lst.every(o=>m.get(o)===1); if(on){m.clear();Array.from(p.querySelectorAll('.btn-main')).forEach(x=>x.classList.remove('active'));Array.from(p.querySelectorAll('.btn-minus')).forEach(x=>x.classList.remove('exclude'));}else{lst.forEach(o=>m.set(o,1));Array.from(p.querySelectorAll('.btn-main')).forEach(x=>x.classList.add('active'));Array.from(p.querySelectorAll('.btn-minus')).forEach(x=>x.classList.remove('exclude'));} updateView(); };
-  const none=document.createElement('button'); none.className='btn-minus'; none.textContent='-'; none.style.color='#ff4444';
-  none.onclick=()=>{ const off=lst.every(o=>m.get(o)===-1); if(off){m.clear();Array.from(p.querySelectorAll('.btn-minus')).forEach(x=>x.classList.remove('exclude'));}else{lst.forEach(o=>m.set(o,-1));Array.from(p.querySelectorAll('.btn-minus')).forEach(x=>x.classList.add('exclude'));Array.from(p.querySelectorAll('.btn-main')).forEach(x=>x.classList.remove('active'));} updateView(); };
-  h.append(all,none); p.appendChild(h); lst.forEach(o=>p.appendChild(createSplitButton(o,o,m)));
-  b.onclick=(e)=>{e.stopPropagation(); if(openDropdownPanel && openDropdownPanel!==p) openDropdownPanel.classList.add('hidden'); p.classList.toggle('hidden'); b.classList.toggle('active',!p.classList.contains('hidden')); openDropdownPanel=p.classList.contains('hidden')?null:p; };
-  w.append(b,p); return w;
+function createDropdown(l, lst, m) {
+  const w = document.createElement('div'); 
+  w.className = 'dropdown-wrapper'; 
+  
+  const b = document.createElement('button'); 
+  b.className = 'btn'; 
+  b.textContent = l + ' ▾'; 
+  
+  const p = document.createElement('div'); 
+  p.className = 'dropdown-panel hidden';
+  
+  const h = document.createElement('div'); 
+  h.className = 'filter-btn-wrapper'; 
+  h.style.marginBottom = '8px';
+  
+  const all = document.createElement('button'); 
+  all.className = 'btn-main'; 
+  all.textContent = 'Select All'; 
+  all.style.textAlign = 'center'; 
+  all.style.color = 'var(--accent)';
+  
+  all.onclick = () => { 
+      const on = lst.every(o => m.get(o) === 1); 
+      if(on) { 
+          m.clear(); 
+          Array.from(p.querySelectorAll('.btn-main')).forEach(x => x.classList.remove('active')); 
+          Array.from(p.querySelectorAll('.btn-minus')).forEach(x => x.classList.remove('exclude')); 
+      } else { 
+          lst.forEach(o => m.set(o, 1)); 
+          Array.from(p.querySelectorAll('.btn-main')).forEach(x => x.classList.add('active')); 
+          Array.from(p.querySelectorAll('.btn-minus')).forEach(x => x.classList.remove('exclude')); 
+      } 
+      updateView(); 
+  };
+  
+  const none = document.createElement('button'); 
+  none.className = 'btn-minus'; 
+  none.textContent = '-'; 
+  none.style.color = '#ff4444';
+  
+  none.onclick = () => { 
+      const off = lst.every(o => m.get(o) === -1); 
+      if(off) { 
+          m.clear(); 
+          Array.from(p.querySelectorAll('.btn-minus')).forEach(x => x.classList.remove('exclude')); 
+      } else { 
+          lst.forEach(o => m.set(o, -1)); 
+          Array.from(p.querySelectorAll('.btn-minus')).forEach(x => x.classList.add('exclude')); 
+          Array.from(p.querySelectorAll('.btn-main')).forEach(x => x.classList.remove('active')); 
+      } 
+      updateView(); 
+  };
+  
+  h.append(all, none); 
+  p.appendChild(h); 
+  lst.forEach(o => p.appendChild(createSplitButton(o, o, m)));
+  
+  b.onclick = (e) => { 
+      e.stopPropagation(); 
+      if(openDropdownPanel && openDropdownPanel !== p) openDropdownPanel.classList.add('hidden'); 
+      p.classList.toggle('hidden'); 
+      b.classList.toggle('active', !p.classList.contains('hidden')); 
+      openDropdownPanel = p.classList.contains('hidden') ? null : p; 
+  };
+  
+  w.append(b, p); 
+  return w;
 }
 
+// Injects the UI Filter components into the DOM
 function renderStaticFilters() {
   el.filterControls.innerHTML = ''; 
   
-  const statusGroup = document.createElement('div'); statusGroup.className = 'filter-group';
-  const statusLabel = document.createElement('div'); statusLabel.className = 'filter-group-label'; statusLabel.textContent = 'Status :';
-  const statusList = document.createElement('div'); statusList.className = 'filter-list';
-  const ownedBtn = document.createElement('button'); ownedBtn.className = 'btn'; ownedBtn.textContent = 'Owned'; if (showMode === 'owned') ownedBtn.classList.add('active');
-  ownedBtn.addEventListener('click', () => { if (showMode === 'owned') { showMode = 'all'; ownedBtn.classList.remove('active'); } else { showMode = 'owned'; ownedBtn.classList.add('active'); notOwnedBtn.classList.remove('active'); } updateView(); });
-  const notOwnedBtn = document.createElement('button'); notOwnedBtn.className = 'btn'; notOwnedBtn.textContent = 'Unowned'; if (showMode === 'notowned') notOwnedBtn.classList.add('active');
-  notOwnedBtn.addEventListener('click', () => { if (showMode === 'notowned') { showMode = 'all'; notOwnedBtn.classList.remove('active'); } else { showMode = 'notowned'; notOwnedBtn.classList.add('active'); ownedBtn.classList.remove('active'); } updateView(); });
-  statusList.append(ownedBtn, notOwnedBtn);
-  statusGroup.append(statusLabel, statusList);
+  const statusGroup = document.createElement('div'); 
+  statusGroup.className = 'filter-group'; 
+  const statusLabel = document.createElement('div'); 
+  statusLabel.className = 'filter-group-label'; 
+  statusLabel.textContent = 'Status :'; 
+  const statusList = document.createElement('div'); 
+  statusList.className = 'filter-list';
+  
+  const ownedBtn = document.createElement('button'); 
+  ownedBtn.className = 'btn'; 
+  ownedBtn.textContent = 'Owned'; 
+  if (showMode === 'owned') ownedBtn.classList.add('active');
+  
+  ownedBtn.addEventListener('click', () => { 
+      if (showMode === 'owned') { showMode = 'all'; ownedBtn.classList.remove('active'); } 
+      else { showMode = 'owned'; ownedBtn.classList.add('active'); notOwnedBtn.classList.remove('active'); } 
+      updateView(); 
+  });
+  
+  const notOwnedBtn = document.createElement('button'); 
+  notOwnedBtn.className = 'btn'; 
+  notOwnedBtn.textContent = 'Unowned'; 
+  if (showMode === 'notowned') notOwnedBtn.classList.add('active');
+  
+  notOwnedBtn.addEventListener('click', () => { 
+      if (showMode === 'notowned') { showMode = 'all'; notOwnedBtn.classList.remove('active'); } 
+      else { showMode = 'notowned'; notOwnedBtn.classList.add('active'); ownedBtn.classList.remove('active'); } 
+      updateView(); 
+  });
+  
+  statusList.append(ownedBtn, notOwnedBtn); 
+  statusGroup.append(statusLabel, statusList); 
   el.filterControls.appendChild(statusGroup);
   
-  // Custom Rarity Group (Simple Buttons)
-  const rarityGroup = document.createElement('div'); rarityGroup.className = 'filter-group';
-  const rarityLabel = document.createElement('div'); rarityLabel.className = 'filter-group-label'; rarityLabel.textContent = 'Rarity :';
-  const rarityList = document.createElement('div'); rarityList.className = 'filter-list';
-  FIXED_RARITY.forEach(r => rarityList.appendChild(createSimpleButton(r, filterStates.rarity)));
-  rarityGroup.append(rarityLabel, rarityList);
+  const rarityGroup = document.createElement('div'); 
+  rarityGroup.className = 'filter-group'; 
+  const rarityLabel = document.createElement('div'); 
+  rarityLabel.className = 'filter-group-label'; 
+  rarityLabel.textContent = 'Rarity :'; 
+  const rarityList = document.createElement('div'); 
+  rarityList.className = 'filter-list';
+  
+  FIXED_RARITY.forEach(r => rarityList.appendChild(createSimpleButton(r, filterStates.rarity))); 
+  rarityGroup.append(rarityLabel, rarityList); 
   el.filterControls.appendChild(rarityGroup);
 
-  createButtonGroup("Type", FIXED_RANGES, filterStates.ranges);
-  createButtonGroup("Role", FIXED_ROLES, filterStates.roles);
-  createButtonGroup("Gender", FIXED_GENDERS, filterStates.genders);
-  createButtonGroup("Kingdom", FIXED_KINGDOMS, filterStates.kingdoms);
-  createButtonGroup("Race", UI_RACES, filterStates.races);
+  createButtonGroup("Type", FIXED_RANGES, filterStates.ranges); 
+  createButtonGroup("Role", FIXED_ROLES, filterStates.roles); 
+  createButtonGroup("Gender", FIXED_GENDERS, filterStates.genders); 
+  createButtonGroup("Kingdom", FIXED_KINGDOMS, filterStates.kingdoms); 
+  createButtonGroup("Race", UI_RACES, filterStates.races); 
   createButtonGroup("Archetype", FIXED_ARCHETYPES, filterStates.archetypes);
   
-  const specGroup = document.createElement('div'); specGroup.className = 'filter-group';
-  const specLabel = document.createElement('div'); specLabel.className = 'filter-group-label'; specLabel.textContent = 'Special :';
-  const specList = document.createElement('div'); specList.className = 'filter-list';
-  specList.appendChild(createDropdown("Seasonal", FIXED_SEASONAL, filterStates.seasonal));
-  specList.appendChild(createDropdown("Crossover", FIXED_CROSSOVER, filterStates.crossover));
-  specGroup.append(specLabel, specList);
+  const specGroup = document.createElement('div'); 
+  specGroup.className = 'filter-group'; 
+  const specLabel = document.createElement('div'); 
+  specLabel.className = 'filter-group-label'; 
+  specLabel.textContent = 'Special :'; 
+  const specList = document.createElement('div'); 
+  specList.className = 'filter-list';
+  
+  specList.appendChild(createDropdown("Seasonal", FIXED_SEASONAL, filterStates.seasonal)); 
+  specList.appendChild(createDropdown("Crossover", FIXED_CROSSOVER, filterStates.crossover)); 
+  specGroup.append(specLabel, specList); 
   el.filterControls.appendChild(specGroup);
-
-  const blackBtn = document.querySelector('.btn-main[data-val="Black"]');
-  if(blackBtn) blackBtn.classList.add('active');
 }
 
-async function safeFetch(url) { const res = await fetch(url); if(!res.ok) throw new Error('Network error'); return res; }
+// =========================================
+// API COMMUNICATION (FANDOM WIKI)
+// =========================================
 
-async function fetchCategoryMembers(catName){
-  const all=[]; let c=null;
-  do { const res=await safeFetch(`${API}?action=query&list=categorymembers&cmtitle=${catName}&cmlimit=500&format=json&origin=*`+(c?`&cmcontinue=${c}`:'')); const d=await res.json(); all.push(...d.query.categorymembers); c=d.continue?.cmcontinue; } while(c);
-  return all;
+async function safeFetch(url) { 
+    const res = await fetch(url); 
+    if(!res.ok) throw new Error('Network error'); 
+    return res; 
 }
 
-function chunkArray(array, size) {
-  const result = [];
-  for (let i = 0; i < array.length; i += size) {
-    result.push(array.slice(i, i + size));
-  }
-  return result;
+// Fetches all pages inside a Wiki Category (supports pagination via cmcontinue)
+async function fetchCategoryMembers(catName){ 
+    const all = []; 
+    let c = null; 
+    do { 
+        const res = await safeFetch(`${API}?action=query&list=categorymembers&cmtitle=${catName}&cmlimit=500&format=json&origin=*`+(c?`&cmcontinue=${c}`:'')); 
+        const d = await res.json(); 
+        all.push(...d.query.categorymembers); 
+        c = d.continue?.cmcontinue; 
+    } while(c); 
+    return all; 
 }
 
+// Helper to batch Wiki API requests to avoid URL length limits
+function chunkArray(array, size) { 
+    const result = []; 
+    for (let i = 0; i < array.length; i += size) {
+        result.push(array.slice(i, i + size)); 
+    }
+    return result; 
+}
+
+/**
+ * Main Initialization sequence if local cache is missing or expired.
+ * 1. Grabs IDs of Black, Platinum, and Chibi units.
+ * 2. Specifically extracts Prince forms (complex naming structures).
+ * 3. Batches ID arrays to fetch Image names.
+ * 4. Batches ID arrays to fetch unit details and tags.
+ */
 async function initFromWiki(){
-  el.loading.textContent='Downloading Lists (Black / Plat / Chibi)...'; el.loading.classList.remove('hidden');
+  el.loading.textContent = 'Downloading Lists...'; 
+  el.loading.classList.remove('hidden');
   try {
-    const [listBlack, listPlat, listChibi] = await Promise.all([
-        fetchCategoryMembers('Category:Rarity:Black'),
-        fetchCategoryMembers('Category:Rarity:Platinum'),
-        fetchCategoryMembers('Category:Chibi_Units')
+    const [listBlack, listPlat, listChibi, princeApi] = await Promise.all([
+        fetchCategoryMembers('Category:Rarity:Black'), 
+        fetchCategoryMembers('Category:Rarity:Platinum'), 
+        fetchCategoryMembers('Category:Chibi_Units'),
+        safeFetch(`${API}?action=query&titles=Prince|Prince/Divine_Beast_Titles&prop=images&imlimit=500&format=json&origin=*`).then(r=>r.json())
     ]);
-    const list = [...listBlack, ...listPlat, ...listChibi];
     
+    // Prince forms are unique and don't behave like standard units in the Wiki structure
+    const princeForms = [];
+    if (princeApi.query && princeApi.query.pages) {
+        Object.values(princeApi.query.pages).forEach(p => {
+            if (p.images) {
+                p.images.forEach(img => {
+                    const cleanTitle = img.title.replace(/^File:/, '');
+                    if (cleanTitle.endsWith('Icon.png') && (cleanTitle.startsWith('Prince ') || cleanTitle === 'Prince Icon.png' || cleanTitle.startsWith('Chibi Prince'))) {
+                        let name = "Prince"; 
+                        let shortForm = "Base";
+                        if (cleanTitle.includes('(')) { 
+                            const match = cleanTitle.match(/\((.*?)\)/); 
+                            if (match) {
+                                shortForm = match[1]; 
+                                name = `Prince (${shortForm})`; 
+                            }
+                        }
+                        else if (cleanTitle.startsWith('Chibi')) { 
+                            name = "Chibi Prince"; 
+                            shortForm = "Chibi"; 
+                        }
+
+                        princeForms.push({
+                            id: `Prince_${shortForm.replace(/\s+/g, '_')}`, 
+                            numericId: 2120, // Static ID to group Prince units together when sorting by Release Date
+                            title: name, 
+                            jpName: '王子', 
+                            imgIconNormal: null, 
+                            imgIconAW: null, 
+                            imgFull: null, 
+                            apiTags: ['Male Units', 'Player Units'], 
+                            tags: [], 
+                            rarity: 'Prince', 
+                            range: 'Melee', 
+                            genders: ['Male Units'], 
+                            roles: ['Player Units'], 
+                            kingdoms: ['Kingdom'], 
+                            races: ['Humans'], 
+                            archetypes: [], 
+                            seasonal: [], 
+                            crossover: [], 
+                            isFodder: false,
+                            _iconFileName: img.title
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    // Filter out duplicate or base Prince objects pulled from standard fetches
+    const list = [...listBlack, ...listPlat, ...listChibi].filter(m => m.pageid !== 2120 && m.title !== "Prince" && m.title !== "Chibi Prince");
+
     units = list.map(m => ({
-      id: String(m.pageid), numericId: parseInt(m.pageid), 
-      title: m.title.replace(/^Category:/i,'').replace(/_/g,' ').trim(),
-      // INIT IMAGES NULL
-      imgIconNormal: null, imgIconAW: null, imgFull: null, 
-      apiTags: [], tags: [], rarity: 'Black', range: 'Melee', genders: [], roles: [], kingdoms: [], races: [], archetypes: [], seasonal: [], crossover: [], isFodder: false
+      id: String(m.pageid), 
+      numericId: parseInt(m.pageid), 
+      title: m.title.replace(/^Category:/i,'').replace(/_/g,' ').trim(), 
+      jpName: '',
+      imgIconNormal: null, 
+      imgIconAW: null, 
+      imgFull: null, 
+      apiTags: [], 
+      tags: [], 
+      rarity: 'Black', // Default, overridden later
+      range: 'Melee', 
+      genders: [], 
+      roles: [], 
+      kingdoms: [], 
+      races: [], 
+      archetypes: [], 
+      seasonal: [], 
+      crossover: [], 
+      isFodder: false
     }));
     
-    unitMap.clear();
-    units.forEach(u => unitMap.set(u.id, u));
-    units = Array.from(unitMap.values());
+    // Add manually parsed Prince variants back in
+    princeForms.forEach(pf => units.push(pf));
 
+    unitMap.clear(); 
+    units.forEach(u => unitMap.set(u.id, u)); 
+    units = Array.from(unitMap.values());
+    
     render(); 
+    el.loading.textContent = 'Hunting Icons...';
     
-    el.loading.textContent='Hunting Icons...';
+    const candidates = []; 
+    const candidateToId = new Map();
     
-    const candidates = []; const candidateToId = new Map();
+    // Build combinations of possible image names because Wiki uploads aren't 100% consistent
     list.forEach(m => {
       let base = m.title.replace(/ \((Black|Platinum|Gold)\)/,'').trim();
-      let c1=`File:${base} AW Icon.png`, c2=`File:${base} Icon.png`, c3=`File:${m.title} AW Icon.png`, c4=`File:${m.title} Icon.png`;
-      candidateToId.set(c1, m.pageid); candidateToId.set(c2, m.pageid);
-      candidateToId.set(c3, m.pageid); candidateToId.set(c4, m.pageid);
-      candidates.push(c1,c2,c3,c4);
+      let c1 = `File:${base} AW Icon.png`;
+      let c2 = `File:${base} Icon.png`;
+      let c3 = `File:${m.title} AW Icon.png`;
+      let c4 = `File:${m.title} Icon.png`;
+      candidateToId.set(c1, m.pageid); 
+      candidateToId.set(c2, m.pageid); 
+      candidateToId.set(c3, m.pageid); 
+      candidateToId.set(c4, m.pageid);
+      candidates.push(c1, c2, c3, c4);
     });
     
-    const uniqueCandidates = [...new Set(candidates)];
-    const iconBatches = chunkArray(uniqueCandidates, 50);
+    princeForms.forEach(pf => {
+        const iconFile = pf._iconFileName;
+        const renderFile = iconFile.replace('Icon.png', 'Render.png'); 
+        candidateToId.set(iconFile, pf.id); 
+        candidateToId.set(renderFile, pf.id);
+        candidates.push(iconFile, renderFile);
+    });
     
+    // Fetch Actual Image URLs from Fandom File titles
+    const iconBatches = chunkArray([...new Set(candidates)], 50);
     const iconPromises = iconBatches.map(batch => {
-        const s = batch.join('|');
-        return safeFetch(`${API}?action=query&titles=${s}&prop=imageinfo&iiprop=url&format=json&origin=*`)
+        return safeFetch(`${API}?action=query&titles=${batch.join('|')}&prop=imageinfo&iiprop=url&format=json&origin=*`)
             .then(res => res.json())
             .then(d => {
-                if(!d.query?.pages) return;
-                Object.values(d.query.pages).forEach(p => {
-                    if(!p.missing && p.imageinfo){
-                        const uid = String(candidateToId.get(p.title));
-                        if(!uid) return;
-                        const u = unitMap.get(uid);
-                        if(u) {
-                            const url = p.imageinfo[0].url;
-                            // TRI DES IMAGES NORMAL VS AW
-                            if(p.title.includes('AW Icon')) {
-                                u.imgIconAW = url;
-                            } else {
-                                u.imgIconNormal = url;
-                            }
+                if(d.query?.pages) {
+                    Object.values(d.query.pages).forEach(p => {
+                        if(!p.missing && p.imageinfo){
+                            const uid = String(candidateToId.get(p.title));
+                            if(uid && unitMap.has(uid)) {
+                                const u = unitMap.get(uid); 
+                                const url = p.imageinfo[0].url;
+                                
+                                if (p.title.includes('Render.png')) u.imgFull = url;
+                                else if(p.title.includes('AW Icon')) u.imgIconAW = url;
+                                else u.imgIconNormal = url;
 
-                            // Mise à jour visuelle immédiate
-                            const card = document.querySelector(`.card[data-id="${uid}"]`);
-                            if(card) {
-                                // On affiche ce qu'on a sous la main pour le feedback visuel
-                                // Si AW demandé, on préfère AW, sinon Normal
-                                const displaySrc = showAW ? (u.imgIconAW || u.imgIconNormal) : (u.imgIconNormal || u.imgIconAW);
-
-                                const existingImg = card.querySelector('img');
-                                if(!existingImg && displaySrc) {
-                                    const noImg = card.querySelector('.no-img'); if(noImg) noImg.remove();
-                                    const img = document.createElement('img'); img.src = displaySrc; img.alt = u.title; img.loading = "lazy"; img.decoding="async";
-                                    const titleEl = card.querySelector('.title'); if(titleEl) card.insertBefore(img, titleEl); else card.appendChild(img);
+                                // Dynamically update the DOM while fetching to give the user immediate feedback
+                                const card = document.querySelector(`.card[data-id="${uid}"]`);
+                                if(card) {
+                                    const displaySrc = showAW ? (u.imgIconAW || u.imgIconNormal) : (u.imgIconNormal || u.imgIconAW);
+                                    const existingImg = card.querySelector('img');
+                                    if(!existingImg && displaySrc) {
+                                        const noImg = card.querySelector('.no-img'); 
+                                        if(noImg) noImg.remove();
+                                        
+                                        const img = document.createElement('img'); 
+                                        img.src = displaySrc; 
+                                        img.alt = u.title; 
+                                        img.loading = "lazy"; 
+                                        img.decoding = "async";
+                                        
+                                        const titleEl = card.querySelector('.title'); 
+                                        if(titleEl) card.insertBefore(img, titleEl); 
+                                        else card.appendChild(img);
+                                    }
                                 }
                             }
                         }
-                    }
-                });
-            })
-            .catch(e => console.error("Icon batch failed", e));
+                    });
+                }
+            }).catch(e => console.error("Icon batch failed", e));
     });
 
-    const detailBatches = chunkArray(units.map(m=>m.numericId), 40);
+    // Fetch deep details (Full art thumbnails, JP name via wikitext, categories)
+    const normalUnits = units.filter(u => u.rarity !== 'Prince');
+    const detailBatches = chunkArray(normalUnits.map(m=>m.numericId), 40);
+    
     const detailPromises = detailBatches.map(batch => {
-        const s = batch.join('|');
-        return safeFetch(`${API}?action=query&pageids=${s}&prop=pageimages|categories&pithumbsize=150&cllimit=500&redirects=1&format=json&formatversion=2&origin=*`)
+        return safeFetch(`${API}?action=query&pageids=${batch.join('|')}&prop=pageimages|categories|revisions&rvprop=content&rvslots=main&pithumbsize=150&cllimit=500&redirects=1&format=json&formatversion=2&origin=*`)
             .then(res => res.json())
             .then(d => {
-                 if(d.query?.pages) d.query.pages.forEach(p => {
-                     const u = unitMap.get(String(p.pageid));
-                     if(u) {
-                         u.imgFull = p.thumbnail?.source || p.original?.source;
-                         u.apiTags = (p.categories||[]).map(c=>c.title);
-                         const processed = processUnitData({ ...u, categories: p.categories });
-                         Object.assign(u, processed);
-                         const card = document.querySelector(`.card[data-id="${u.id}"]`);
-                         if(card) card.dataset.rarity = u.rarity;
-                     }
-                 });
-            })
-            .catch(e => console.error("Detail batch failed", e));
+                 if(d.query?.pages) {
+                     d.query.pages.forEach(p => {
+                         const u = unitMap.get(String(p.pageid));
+                         if(u) {
+                             u.imgFull = p.thumbnail?.source || p.original?.source;
+                             u.apiTags = (p.categories||[]).map(c=>c.title);
+                             
+                             // RegEx to pull JP Name from Wikitext Source
+                             let jp = '';
+                             if(p.revisions && p.revisions[0]?.slots?.main?.content) {
+                                 const match = p.revisions[0].slots.main.content.match(/\|jpname\s*=\s*(.*?)(?=\n|\||<br)/i);
+                                 if (match) jp = match[1].trim();
+                             }
+                             u.jpName = jp; 
+                             Object.assign(u, processUnitData(u));
+                             
+                             // Dynamically insert JP names
+                             const card = document.querySelector(`.card[data-id="${u.id}"]`);
+                             if(card) {
+                                card.dataset.rarity = u.rarity; 
+                                const titleEl = card.querySelector('.title');
+                                if(titleEl && jp && !card.querySelector('.jp-title') && showName) { 
+                                    const jpEl = document.createElement('div'); 
+                                    jpEl.className = 'jp-title'; 
+                                    jpEl.textContent = jp; 
+                                    card.insertBefore(jpEl, titleEl.nextSibling); 
+                                }
+                             }
+                         }
+                     });
+                 }
+            }).catch(e => console.error("Detail batch failed", e));
     });
 
     await Promise.all([...iconPromises, ...detailPromises]);
@@ -929,62 +1368,72 @@ async function initFromWiki(){
     render(); 
     el.loading.classList.add('hidden');
     
-  } catch(e){ 
+  } catch(e) { 
       el.loading.textContent='Error'; 
       console.error(e); 
   }
 }
 
-async function init() {
-  // ÉTAPE 1 : Charger la liste "Owned" locale (Instantané)
-  // On prépare le terrain. Si on a des unités, elles seront prêtes à être cochées.
-  try {
-      const storedOwned = localStorage.getItem(LOCAL_OWNED_KEY);
-      if (storedOwned) {
-          owned = new Set(JSON.parse(storedOwned));
-      }
-  } catch(e) { console.error("Error loading owned list", e); }
+// =========================================
+// BOOTSTRAPPING & APP START
+// =========================================
 
-  // ÉTAPE 2 : Charger les Unités (Cache ou Wiki)
-  const cachedData = localStorage.getItem(LOCAL_DATA_KEY);
+// Purges previous iteration save keys to prevent localStorage bloat
+function cleanupOldCaches() {
+    const keysToDelete = [];
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('aigis-units-cache') && key !== LOCAL_DATA_KEY) {
+            keysToDelete.push(key);
+        }
+    }
+    keysToDelete.forEach(k => localStorage.removeItem(k));
+}
+
+async function init() {
+  filterStates.rarity.set('Black', 1); // Default active filter
+  cleanupOldCaches(); 
+  
+  // Load local ownership data
+  try { 
+      const storedOwned = localStorage.getItem(LOCAL_OWNED_KEY); 
+      if (storedOwned) owned = new Set(JSON.parse(storedOwned)); 
+  } catch(e) {}
+  
+  // Check valid cache before hitting the Fandom API
+  const cachedData = localStorage.getItem(LOCAL_DATA_KEY); 
   let unitsLoaded = false;
   
-  // A. Essai via le Cache
   if (cachedData) { 
       try { 
           const d = await decompressFromB64(cachedData);
+          // Cache expires after 24h (86400000ms)
           if (Date.now() - d.timestamp < 86400000 && Array.isArray(d.units)) { 
               units = d.units; 
-              unitMap.clear();
-              units.forEach(u => unitMap.set(u.id, u));
+              unitMap.clear(); 
+              units.forEach(u => unitMap.set(u.id, u)); 
               unitsLoaded = true;
           } 
       } catch(e) { console.warn('Cache invalide', e); } 
   }
 
-  // B. Si pas de cache valide, on télécharge (Wiki)
-  if (!unitsLoaded) { 
-      // initFromWiki dessine déjà pour montrer la progression, c'est normal
+  // Fetch from scratch if required
+  if (!unitsLoaded) {
       await initFromWiki(); 
   }
 
-  filterStates.rarity.set('Black', 1);
-
-  // ÉTAPE 3 : Gestion du lien de partage (Share Mode)
-  // On le fait MAINTENANT car on a besoin que 'units' soit chargé pour décompresser l'URL
+  // Handle Shared URL parameters if viewing someone else's list
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.has('share') && units.length > 0) { 
       try { 
-          // On écrase la liste 'owned' locale par celle de l'URL
           owned = await decompressData(urlParams.get('share')); 
           isSharedMode = true; 
           showMode = 'owned'; 
           
-          // Mise à jour de l'interface spécifique au mode partage
           document.getElementById('shared-banner').classList.remove('hidden'); 
           document.body.classList.add('read-only'); 
           
-          // On force visuellement les boutons de filtres
+          // Force view to "Owned" layout when inspecting shared links
           document.querySelectorAll('.filter-controls button').forEach(b => { 
               if(b.textContent === 'Owned') b.classList.add('active'); 
               if(b.textContent === 'Unowned') b.classList.remove('active'); 
@@ -992,16 +1441,11 @@ async function init() {
       } catch(e) { console.error("Share link error", e); } 
   } 
   
-  // ÉTAPE 4 : RENDER FINAL
-  // On ne dessine qu'une seule fois ici, avec la certitude d'avoir :
-  // 1. Les unités
-  // 2. La bonne liste owned (Locale OU Partagée)
   el.loading.classList.add('hidden'); 
-  render();
-  updateView(); // Applique les filtres (comme showMode = 'owned')
-  renderStaticFilters(); // Met à jour l'état visuel des boutons filtres
+  render(); 
+  updateView(); 
+  renderStaticFilters(); 
 }
-
 </script>
 </body>
 </html>
