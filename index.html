@@ -92,6 +92,20 @@ body { font-family: Inter, system-ui, sans-serif; background: var(--bg); color: 
 .collection-stats b { color: var(--accent); }
 @media (max-width: 850px) { .collection-stats { position: static; transform: none; margin: 10px 0; } }
 
+/* --- CHANGELOG MODAL --- */
+.changelog-box { max-width: 500px; text-align: left; }
+.changelog-content { max-height: 60vh; overflow-y: auto; padding-right: 10px; }
+.changelog-item { border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 16px; margin-bottom: 16px; }
+.changelog-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.changelog-date { color: var(--accent); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+.changelog-title { color: #fff; font-size: 14px; font-weight: bold; margin-bottom: 8px; }
+.changelog-list { padding-left: 20px; color: var(--muted); font-size: 12.5px; line-height: 1.6; }
+.changelog-list li { margin-bottom: 4px; }
+.changelog-content::-webkit-scrollbar { width: 6px; }
+.changelog-content::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; }
+.changelog-content::-webkit-scrollbar-thumb { background: var(--accent-muted); border-radius: 4px; }
+.changelog-content::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
 /* =========================================
    TOOLBAR & BUTTONS
    ========================================= */
@@ -106,7 +120,17 @@ body { font-family: Inter, system-ui, sans-serif; background: var(--bg); color: 
 
 #btn-share-link { background-color: var(--accent-muted); color: #e6f0f6; font-weight: 600; }
 #btn-share-link.copied { background-color: var(--accent) !important; color: #071021 !important; border-color: var(--accent) !important; box-shadow: 0 0 15px var(--accent); }
-
+#btn-export.needs-backup {
+  background-color: var(--danger-soft) !important;
+  color: #fff !important;
+  border-color: var(--danger) !important;
+  animation: pulse-danger 2s infinite;
+}
+/*@keyframes pulse-danger {
+  0% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(255, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 68, 68, 0); }
+}*/
 .toolbar-line { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; justify-content: center; margin-top: 10px; }
 .input { padding: 8px 12px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.2); color: inherit; min-width: 250px; }
 .sort-select { 
@@ -213,8 +237,19 @@ body.img-full .card img { width: 100%; height: 120px; background: transparent; }
 <div class="container">
   
   <div class="header">
-    <div class="title-group">
-      <h1 class="h1">Aigis — Collection Tracker</h1>
+<div class="title-group">
+      <!-- Ligne alignant le titre et le bouton info -->
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <h1 class="h1">Aigis — Collection Tracker</h1>
+        <button id="btn-changelog" class="btn" style="padding: 6px; border-radius: 50%; display: flex; align-items: center; justify-content: center;" title="Changelog & Info">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+        </button>
+      </div>
+      
       <div id="shared-banner" class="shared-banner hidden">
         <div class="shared-text-group">
           <span class="shared-label">Shared Collection</span>
@@ -241,6 +276,7 @@ body.img-full .card img { width: 100%; height: 120px; background: transparent; }
           <button id="btn-toggle-name" class="btn active">Show Name</button>
           <button id="btn-toggle-tags" class="btn">Show Tags</button>
           <button id="btn-toggle-fodder" class="btn">Show Fodder</button>
+		  <button id="btn-toggle-bulk" class="btn">Bulk Add: OFF</button> 
         </div>
       </div>
       <input id="file-input" type="file" accept="application/json" class="hidden" />
@@ -254,12 +290,28 @@ body.img-full .card img { width: 100%; height: 120px; background: transparent; }
       <option value="release">Sort: Release (Newest)</option>
     </select>
     <div id="search-stats" style="font-size:12px; color:var(--muted)">0 shown</div>
+	<button id="btn-bulk-add" class="btn hidden">add shown</button>
   </div>
 
   <div id="filter-controls" class="filter-controls"></div>
 
   <div id="loading" class="loading hidden">Loading...</div>
   <div id="grid" class="grid" aria-live="polite"></div>
+</div>
+
+<!-- BULK ADD MODAL -->
+<div id="bulk-modal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <div class="modal-title">⚠️ Bulk Add Confirmation</div>
+    <div class="modal-text">
+      You are about to mark <strong id="bulk-modal-count" style="color:var(--info-color); font-size:18px;">0</strong> visible units as owned.<br><br>
+      <strong>Are you sure?</strong>
+    </div>
+    <div class="modal-actions">
+      <button id="btn-modal-bulk-yes" class="btn-danger">Yes, Add All</button>
+      <button id="btn-modal-bulk-no" class="btn" style="padding:10px 18px; font-weight:bold;">Cancel</button>
+    </div>
+  </div>
 </div>
 
 <!-- OVERWRITE MODAL -->
@@ -273,6 +325,85 @@ body.img-full .card img { width: 100%; height: 120px; background: transparent; }
     <div class="modal-actions">
       <button id="btn-modal-yes" class="btn-danger">Yes, I'm sure</button>
       <button id="btn-modal-no" class="btn" style="padding:10px 18px; font-weight:bold;">No, keep my save</button>
+    </div>
+  </div>
+</div>
+
+<!-- CHANGELOG MODAL -->
+<div id="changelog-modal" class="modal-overlay hidden">
+  <div class="modal-box changelog-box">
+    <div class="modal-title" style="color: var(--info-color);">INFO & CHANGELOG</div>
+    <div class="changelog-content">
+      
+      <div class="changelog-item">
+	    <div class="changelog-date">May 08, 2026</div>
+        <div class="changelog-title">QOL</div>
+        <ul class="changelog-list">
+          <li>Added Bulk Add: You can now mark all currently visible units as owned at once.</li>
+          <li>Added Export Reminder: The export button will now be red if you haven't backed up recent changes.</li>
+          <li>Added Information & Changelog menu</li>
+        </ul>
+      </div>
+	 
+      <div class="changelog-item">
+        <div class="changelog-date">May 05, 2026</div>
+        <div class="changelog-title">Major Update: Prince, JP Names & Tools</div>
+        <ul class="changelog-list">
+          <li>Added "Prince" rarity: Auto-fetches all Prince variations via Image API.</li>
+          <li>Added Japanese Names: Displays JP names. Search bar now supports JP characters.</li>
+          <li>Added "Copy Save" Modal: Users in 'View Mode' can now overwrite their local save.</li>
+          <li>Added Garbage Collector: Automatically deletes old caches to free up memory.</li>
+        </ul>
+      </div>
+
+      <div class="changelog-item">
+        <div class="changelog-date">Dec 31, 2025</div>
+        <div class="changelog-title">Optimisation</div>
+        <ul class="changelog-list">
+          <li>Code optimisation & performance improvements.</li>
+        </ul>
+      </div>
+
+      <div class="changelog-item">
+        <div class="changelog-date">Dec 19, 2025</div>
+        <div class="changelog-title">Hotfix</div>
+        <ul class="changelog-list">
+          <li>Fix rarity attribution logic.</li>
+        </ul>
+      </div>
+
+      <div class="changelog-item">
+        <div class="changelog-date">Dec 16, 2025</div>
+        <div class="changelog-title">Content Update & Fixes</div>
+        <ul class="changelog-list">
+          <li>Added Platinum and Gold rarities.</li>
+          <li>Various bug fixes.</li>
+        </ul>
+      </div>
+
+      <div class="changelog-item">
+        <div class="changelog-date">Dec 15, 2025</div>
+        <div class="changelog-title">Performance Patch</div>
+        <ul class="changelog-list">
+          <li>"Crazy faster" rendering and loading speed.</li>
+        </ul>
+      </div>
+
+      <div class="changelog-item">
+        <div class="changelog-date">Dec 06, 2025</div>
+        <div class="changelog-title">Massive Update</div>
+        <ul class="changelog-list">
+          <li>Icons added.</li>
+          <li>Better UI.</li>
+          <li>Fixed tags and added Anti-tags feature.</li>
+          <li>Better Share Link.</li>
+          <li>Wiki links integrated on cards.</li>
+        </ul>
+      </div>
+
+    </div>
+    <div class="modal-actions" style="margin-top: 20px;">
+      <button id="btn-close-changelog" class="btn" style="width: 100%; font-weight: bold; padding: 10px;">Close</button>
     </div>
   </div>
 </div>
@@ -307,7 +438,8 @@ const LABEL_MAP = {
     "Valentine's Day Units": "Valentine", "Hot Springs Units": "Hot Springs", 
     "Easter Hunts": "Easter", "School Units": "School", "June Bride Units": "Bride", 
     "Summer Units": "Summer", "Halloween Units": "Halloween", "Christmas Units": "Christmas", 
-    "Kingdom of Pars": "Pars", "Seven Deadly Sins": "7 Deadly Sins", "Hero Units": "Hero", "Player Units": "Player" 
+    "Kingdom of Pars": "Pars", "Seven Deadly Sins": "7 Deadly Sins", "Hero Units": "Hero", "Player Units": "Player", 
+	"Crossover Units": "All Crossover" 
 };
 
 function cleanLabel(raw) { 
@@ -326,7 +458,7 @@ const FIXED_RARITY = ["Prince", "Black", "Platinum", "Gold"];
 const FIXED_KINGDOMS=["Deep Sea Units","Desert Country","Eastern Country","Flower Country","Kingdom","Makai Units","White Empire"];
 const FIXED_ARCHETYPES=["Artillery","Bowmen","Cavalry","Clergy","Dragons","Flying","Gunners","Heavy","Magicians","Nobles"];
 const FIXED_SEASONAL=["New Year's Units","Valentine's Day Units","Hot Springs Units","Easter Hunts","School Units","June Bride Units","Summer Units","Halloween Units","Christmas Units"];
-const FIXED_CROSSOVER=["Koihime Units","Kingdom of Pars","Seven Deadly Sins"];
+const FIXED_CROSSOVER=["Koihime Units","Kingdom of Pars","Seven Deadly Sins","Crossover Units"];
 const FIXED_RANGES = ["Melee", "Ranged", "Omni"];
 const FIXED_ROLES = ["Hero Units", "Player Units"];
 const FIXED_GENDERS = ["Male Units", "Female Units"];
@@ -464,7 +596,11 @@ async function saveUnitsToCache(data) {
 }
 
 function saveOwned(){ 
-    if (!isSharedMode) localStorage.setItem(LOCAL_OWNED_KEY,JSON.stringify([...owned])); 
+    if (!isSharedMode) {
+        localStorage.setItem(LOCAL_OWNED_KEY,JSON.stringify([...owned])); 
+        localStorage.setItem('aigis-last-edit', Date.now()); 
+        checkBackupReminder(); 
+    }
 }
 
 // =========================================
@@ -804,12 +940,14 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch(x) { alert('Error'); }
   });
 
-  document.getElementById('btn-export').onclick = async () => { 
+document.getElementById('btn-export').onclick = async () => { 
       const blob = await compressToBlob({ owned: [...owned], units });
       const a = document.createElement('a'); 
       a.href = URL.createObjectURL(blob); 
       a.download = 'aigis-data.json.gz'; 
       a.click(); 
+      localStorage.setItem('aigis-last-export', Date.now());
+      checkBackupReminder(); 
   };
   
   document.getElementById('btn-import').onclick = () => document.getElementById('file-input').click();
@@ -858,6 +996,54 @@ document.addEventListener('DOMContentLoaded', () => {
   const toggleNameBtn = document.getElementById('btn-toggle-name'); 
   const toggleImgBtn = document.getElementById('btn-toggle-imgmode');
   const toggleAWBtn = document.getElementById('btn-toggle-aw');
+  // --- BULK ADD LOGIC ---
+  const toggleBulkBtn = document.getElementById('btn-toggle-bulk');
+  const bulkAddBtn = document.getElementById('btn-bulk-add');
+  const bulkModal = document.getElementById('bulk-modal');
+  let showBulk = false;
+  let pendingBulkIds = [];
+
+  if (toggleBulkBtn && bulkAddBtn) {
+      toggleBulkBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          showBulk = !showBulk;
+          toggleBulkBtn.textContent = showBulk ? "Bulk Add: ON" : "Bulk Add: OFF";
+          toggleBulkBtn.classList.toggle('active', showBulk);
+          bulkAddBtn.classList.toggle('hidden', !showBulk); // Shows/Hides the button next to search
+      });
+      bulkAddBtn.addEventListener('click', () => {
+          if (isSharedMode) return alert("Cannot bulk add in View Mode.");
+          
+
+          pendingBulkIds = Array.from(document.querySelectorAll('#grid .card:not(.hidden)')).map(c => c.dataset.id);
+          
+          if (pendingBulkIds.length === 0) return alert('No units shown to add.');
+          
+          document.getElementById('bulk-modal-count').textContent = pendingBulkIds.length;
+          bulkModal.classList.remove('hidden');
+      });
+
+      document.getElementById('btn-modal-bulk-yes').addEventListener('click', () => {
+          pendingBulkIds.forEach(id => owned.add(id));
+          saveOwned();
+          
+          pendingBulkIds.forEach(id => {
+              const card = document.querySelector(`.card[data-id="${id}"]`);
+              if (card) card.classList.add('owned');
+          });
+          
+          updateStats();
+          bulkModal.classList.add('hidden');
+          pendingBulkIds = [];
+      });
+
+      document.getElementById('btn-modal-bulk-no').addEventListener('click', () => {
+          bulkModal.classList.add('hidden');
+          pendingBulkIds = [];
+      });
+  }
+  
+  
   
   if (optionsBtn) {
     optionsBtn.addEventListener('click', (e) => { 
@@ -886,6 +1072,18 @@ document.addEventListener('DOMContentLoaded', () => {
           optionsBtn.classList.remove('active'); 
       } 
   });
+  
+  // --- CHANGELOG MODAL LOGIC ---
+  const changelogBtn = document.getElementById('btn-changelog');
+  const changelogModal = document.getElementById('changelog-modal');
+  
+  if (changelogBtn && changelogModal) {
+      changelogBtn.addEventListener('click', () => changelogModal.classList.remove('hidden'));
+      document.getElementById('btn-close-changelog').addEventListener('click', () => changelogModal.classList.add('hidden'));
+      changelogModal.addEventListener('click', (e) => {
+          if(e.target === changelogModal) changelogModal.classList.add('hidden');
+      });
+  }
   
   renderStaticFilters(); 
   init();
@@ -1378,6 +1576,19 @@ async function initFromWiki(){
 // BOOTSTRAPPING & APP START
 // =========================================
 
+function checkBackupReminder() {
+    if (isSharedMode) return;
+    
+    const lastEdit = parseInt(localStorage.getItem('aigis-last-edit') || '0', 10);
+    const lastExport = parseInt(localStorage.getItem('aigis-last-export') || '0', 10);
+    const timelastExport = 259200000; 		//  SEVEN_DAYS = 604800000
+    if (lastEdit > 0 && (Date.now() - lastExport > timelastExport) && (lastEdit > lastExport)) {
+        document.getElementById('btn-export').classList.add('needs-backup');
+    } else {
+        document.getElementById('btn-export').classList.remove('needs-backup');
+    }
+}
+
 // Purges previous iteration save keys to prevent localStorage bloat
 function cleanupOldCaches() {
     const keysToDelete = [];
@@ -1445,6 +1656,7 @@ async function init() {
   render(); 
   updateView(); 
   renderStaticFilters(); 
+  checkBackupReminder();
 }
 </script>
 </body>
